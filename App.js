@@ -60,64 +60,28 @@ class TextMarquee extends PureComponent {
     this.start(timeDelay)
   }
 
+  animate = () => {
+    Animated.timing(this.animatedValue, {
+      toValue:         -this.distance - this.containerWidth,
+      duration:        this.props.duration,
+      useNativeDriver: true
+    }).start(({ finished }) => {
+      if (finished) {
+        this.animatedValue.setValue(this.containerWidth)
+        this.animate()
+      }
+    })
+  }
+
   start = async (timeDelay) => {
     const { duration, loop, onMarqueeComplete, useNativeDriver } = this.props 
-    
     this.setState({ animating: true })
-    if (!this.containerWidth || this.animatedValue._value === this.containerWidth) {
-      // Keep checking layout until it's on the page
-      this.setTimeout(async () => {
-        await this.calculateMetrics()
-        if (!this.contentFits) {
-          Animated.timing(this.animatedValue, {
-            toValue: -this.distance - this.containerWidth,
-            duration,
-            useNativeDriver
-          }).start(({ finished }) => {
-            if (finished) {
-              if (loop) {
-                this.animatedValue.setValue(this.containerWidth)
-                this.start()
-              }
-            }
-          })
-        }
-      }, 100)
-    } else {
-      this.clearTimeout(this.timer)
-    }
-
-    // const callback = () => {
-    //   if (!this.contentFits) {
-    //     console.log(this.distance, this.containerWidth)
-    //     Animated.timing(this.animatedValue, {
-    //       toValue:         -this.distance - this.containerWidth,
-    //       duration:        duration,
-    //       useNativeDriver: true
-    //     }).start()
-    //   }
-    // }
-
-
-    // const callback = () => {
-    //   this.setState({ animating: true })
-
-    //   this.setTimeout(() => {
-    //     this.calculateMetrics()
-    //     console.log(this.contentFits)
-    //     if (!this.contentFits) {
-    //       Animated.loop(
-    //         Animated.timing(this.animatedValue, {
-    //           toValue:         -this.distance - this.containerWidth,
-    //           duration:        duration,
-    //           useNativeDriver: true
-    //         })
-    //       ).start()
-    //     }
-    //   }, 100)
-    // }
-    // // TODO: Use timeDelay instead of 1000
-    // this.setTimeout(callback, 1000)
+    this.setTimeout(async () => {
+      await this.calculateMetrics()
+      if (!this.contentFits) {
+        this.animate()
+      }
+    }, 100)
   }
 
   stop() {
