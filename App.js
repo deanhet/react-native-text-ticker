@@ -16,7 +16,7 @@ class TextMarquee extends PureComponent {
   static defaultProps = {
     style:             {},
     duration:          3000,
-    loop:              false,
+    loop:              true,
     marqueeOnStart:    false,
     marqueeDelay:      0,
     marqueeResetDelay: 0,
@@ -41,6 +41,14 @@ class TextMarquee extends PureComponent {
     if (true) {
       this.startAnimation(marqueeDelay)
     }
+  }
+
+  resetAnimation() {
+    const marqueeResetDelay = Math.max(100, this.props.marqueeResetDelay)
+    this.animatedValue.setValue(0)
+    this.setState({ animating: false }, () => {
+      this.startAnimation(marqueeResetDelay)
+    })
   }
 
   startAnimation = (timeDelay) => {
@@ -70,6 +78,7 @@ class TextMarquee extends PureComponent {
             if (finished) {
               if (loop) {
                 // Loop over
+                this.resetAnimation()
               } else {
                 this.stop()
                 onMarqueeComplete()
