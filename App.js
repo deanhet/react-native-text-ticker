@@ -6,92 +6,94 @@ import {
   View, 
   ScrollView, 
   NativeModules, 
-  findNodeHandle 
+  findNodeHandle,
+  TouchableOpacity
 } from 'react-native'
+import PropTypes from 'prop-types'
 
 /* TODO:
 - If text is only slightly wider than screen then bounce text instead
-- Change duration from a time to based on text width
 */
 
 const { UIManager } = NativeModules
 
 class TextMarquee extends PureComponent {
 
+  static propTypes = {
+    style:           PropTypes.object,
+    duration:        PropTypes.number,
+    loop:            PropTypes.bool,
+    marqueeOnMount:  PropTypes.bool,
+    marqueeDelay:    PropTypes.number,
+    useNativeDriver: PropTypes.bool,
+    children:        PropTypes.string,
+    repeatSpacer:    PropTypes.number
+  }
+
   static defaultProps = {
     style:             {},
-    duration:          5000,
     loop:              true,
-    marqueeOnStart:    false,
+    marqueeOnMount:    true,
     marqueeDelay:      0,
-    marqueeResetDelay: 0,
-    onMarqueeComplete: () => {},
-    useNativeDriver:   true
+    useNativeDriver:   true,
+    repeatSpacer:    50
   }
 
   animatedValue = new Animated.Value(0)
-  contentFits = false
-  distance = null;
-  textRef = null;
-  containerRef = null;
+  distance = null
+  textRef = null
+  containerRef = null
 
   state = {
-    animating: false
+    animating:   false,
+    contentFits: true
   }
 
   componentDidMount() {
-    const { style, ... rest } = this.props
-
-    this.setState({ children: [this.props.children]})
     this.invalidateMetrics()
-    const { marqueeDelay, marqeeOnStart } = this.props
+    const { marqueeDelay, marqueeOnMount } = this.props
     // TODO: use marqueeOnStart
-    if (true) {
+    if (marqueeOnMount) {
       this.startAnimation(marqueeDelay)
     }
-  }
-
-  resetAnimation() {
-    const marqueeResetDelay = Math.max(100, this.props.marqueeResetDelay)
-    this.animatedValue.setValue(this.containerWidth)
-    this.setState({ animating: false }, () => {
-      this.startAnimation(marqueeResetDelay)
-    })
   }
 
   startAnimation = (timeDelay) => {
     if (this.state.animating) {
       return
     }
-    console.log('in startAnimation')
     this.start(timeDelay)
   }
 
   animate = () => {
-    Animated.timing(this.animatedValue, {
-      toValue:         -this.textWidth - 50,
-      duration:        this.props.duration,
-      useNativeDriver: true
-    }).start(({ finished }) => {
-      if (finished) {
-        this.animatedValue.setValue(0)
-        this.animate()
-      }
-    })
+    const {duration, marqueeDelay, loop, useNativeDriver, repeatSpacer, children} = this.props 
+    this.setTimeout(() => {
+      Animated.timing(this.animatedValue, {
+        toValue:         -this.textWidth - repeatSpacer,
+        duration:        duration || children.length * 150,
+        useNativeDriver: useNativeDriver
+      }).start(({ finished }) => {
+        if (finished) {
+          if (loop) {
+            this.animatedValue.setValue(0)
+            this.animate()
+          }
+        }
+      })
+    }, marqueeDelay)
   }
 
   start = async (timeDelay) => {
-    const { duration, loop, onMarqueeComplete, useNativeDriver } = this.props 
     this.setState({ animating: true })
     this.setTimeout(async () => {
       await this.calculateMetrics()
-      if (!this.contentFits) {
+      if (!this.state.contentFits) {
         this.animate()
       }
     }, 100)
   }
 
-  stop() {
+  stopAnimation() {
     this.animatedValue.setValue(0)
     this.setState({ animating: false })
   }
@@ -102,7 +104,7 @@ class TextMarquee extends PureComponent {
         const measureWidth = node => 
           new Promise(resolve => {
             UIManager.measure(findNodeHandle(node), (x, y, w) => {
-              console.log('Width: ' + w)
+              // console.log('Width: ' + w)
               return resolve(w)
             })
           })
@@ -115,10 +117,9 @@ class TextMarquee extends PureComponent {
         this.containerWidth = containerWidth
         this.textWidth = textWidth
         this.distance = textWidth - containerWidth
-        this.contentFits = this.distance < 0
-        console.log(`distance: ${this.distance}, contentFits: ${this.contentFits}`)
+        this.setState({ contentFits: this.distance < 0 })
+        // console.log(`distance: ${this.distance}, contentFits: ${this.state.contentFits}`)
         resolve([])
-
       } catch (error) {
         console.warn(error)
       }
@@ -127,32 +128,28 @@ class TextMarquee extends PureComponent {
 
   invalidateMetrics = () => {
     this.distance = null
-    this.contentFits = false
+    this.setState({ contentFits: false })
   }
 
   clearTimeout() {
     if (this.timer) {
       clearTimeout(this.timer)
       this.timer = null
-      // console.log("Currently running timeout is cleared!!!");
     }
   }
 
-  setTimeout(fn: Function, time: number = 0) {
+  setTimeout(fn, time = 0) {
     this.clearTimeout()
     this.timer = setTimeout(fn, time)
   }
-  
 
   render() {
-    const { style, ... rest } = this.props
-    const { animating, children } = this.state
-    // const { width, height } = StyleSheet.flatten(style)
-
+    const { style, children, repeatSpacer, ... props } = this.props
+    const { animating, contentFits } = this.state
     return (
       <View style={[styles.container]}>
         <Text 
-          {...rest} 
+          {...props} 
           numberOfLines={1}
           style={[style, { opacity: animating ? 0 : 1 }]}
         >
@@ -168,23 +165,23 @@ class TextMarquee extends PureComponent {
           onContentSizeChange={() => this.calculateMetrics()}
         >
           <Animated.Text
-            key={'test'}
             ref={c => (this.textRef = c)}
             numberOfLines={1}
-            {... rest}
+            {... props}
             style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
           >
             {this.props.children}           
           </Animated.Text>
-          <View key="spacer" style={{ width: 50 }} />
-          <Animated.Text
-            key={'otherTest'}
-            numberOfLines={1}
-            {... rest}
-            style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
-          >
-            {this.props.children}           
-          </Animated.Text>
+          {!contentFits
+            ? <View style={{ paddingLeft: repeatSpacer }}>
+              <Animated.Text
+                numberOfLines={1}
+                {... props}
+                style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
+              >
+                {this.props.children}           
+              </Animated.Text>
+            </View> : null }
         </ScrollView>
       </View>
     )
@@ -197,7 +194,21 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={astyles.container}>
-        <TextMarquee>Super long piece of text is long. The quick brown fox jumps over the lazy dog.</TextMarquee>
+        <TouchableOpacity onPress={() => this.marquee.startAnimation()}>
+          <Text>Start Animation</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => this.marquee.stopAnimation()}>
+          <Text>Stop Animation</Text>
+        </TouchableOpacity>
+
+        <TextMarquee marqueeOnMount={false} ref={c => this.marquee = c}>
+          Super long piece of text is long. The quick brown fox jumps over the lazy dog.
+        </TextMarquee>
+
+        <TextMarquee>
+          Super long piece of text is long. The quick brown fox jumps over the lazy dog.
+        </TextMarquee>
       </View>
     )
   }
