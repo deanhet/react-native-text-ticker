@@ -35,7 +35,7 @@ export default class TextMarquee extends PureComponent {
     marqueeOnMount:    true,
     marqueeDelay:      0,
     useNativeDriver:   true,
-    repeatSpacer:    50
+    repeatSpacer:      50
   }
 
   animatedValue = new Animated.Value(0)
