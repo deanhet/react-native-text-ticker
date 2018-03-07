@@ -1,0 +1,64 @@
+{
+    "root": true,
+    "parser": "babel-eslint",
+    "plugins": ["react"],
+    "extends": [
+      "standard",
+      "plugin:react/recommended"
+    ],
+    "env": {
+      "browser": true,
+      "node": true,
+      "es6": true,
+      "jasmine": true,
+      "mocha": true
+    },
+    "rules": {
+      "array-bracket-spacing": 0,
+      "brace-style": 2,
+      "comma-dangle": ["warn", "never"],
+      "comma-spacing": ["warn", {"before": false, "after": true}],
+      "curly": 2,
+      "indent": ["warn", 2, "SwitchCase": 1],
+      "key-spacing": ["warn", {"beforeColon": false, "afterColon": true, "mode": "minimum", "align": "value"}],
+      "keyword-spacing": [2, {"before": true, "after": true}],
+      "max-len": ["warn", {"code": 100, "tabWidth": 2, "ignoreComments": true, "ignoreUrls": true, "ignoreTemplateLiterals": true, "ignoreTrailingComments": true}],
+      "no-alert": 0,
+      "no-console": 0,
+      "no-multiple-empty-lines": [1, {"max": 3}],
+      "no-param-reassign": 2,
+      "no-sparse-arrays": 2,
+      "no-trailing-spaces": 0,
+      "no-unreachable": 2,
+      "object-curly-spacing": 0,
+      "padded-blocks": ["warn", { "switches": "always", "classes": "always" }],
+      "prefer-const": ["error", {"destructuring": "any"}],
+      "quote-props": [1, "as-needed"],
+      "quotes": [2, "single", "avoid-escape"],
+      "rest-spread-spacing": ["warn", "always"],
+      "semi-spacing": [1, {"before": false, "after": true}],
+      "semi": [1, "never"],
+      "space-before-blocks": [1, "always"],
+      "space-before-function-paren": [1, {"anonymous": "always", "named": "never"}],
+      "space-in-parens": [1, "never"],
+      "space-infix-ops": 1,
+      "space-unary-ops": [1, {"words": true, "nonwords": false}],
+      "spaced-comment": [1, "always"],
+      "strict": 0,
+      "react/display-name": 0,
+      "react/no-danger": 0,
+      "react/prop-types": 1,
+      "react/no-unused-prop-types": 1
+    },
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": 6,
+      "ecmaFeatures": {
+        "jsx": true,
+        "experimentalObjectRestSpread": true,
+        "modules": true,
+        "classes": true
+      }
+    }
+  }
+  
