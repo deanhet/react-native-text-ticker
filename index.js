@@ -51,7 +51,6 @@ export default class TextMarquee extends PureComponent {
   componentDidMount() {
     this.invalidateMetrics()
     const { marqueeDelay, marqueeOnMount } = this.props
-    // TODO: use marqueeOnStart
     if (marqueeOnMount) {
       this.startAnimation(marqueeDelay)
     }
