@@ -45,7 +45,7 @@ export default class TextMarquee extends PureComponent {
 
   state = {
     animating:   false,
-    contentFits: true
+    contentFits: false
   }
 
   componentDidMount() {
@@ -116,7 +116,7 @@ export default class TextMarquee extends PureComponent {
         this.containerWidth = containerWidth
         this.textWidth = textWidth
         this.distance = textWidth - containerWidth
-        this.setState({ contentFits: this.distance < 0 })
+        this.setState({ contentFits: this.distance <= 0 })
         // console.log(`distance: ${this.distance}, contentFits: ${this.state.contentFits}`)
         resolve([])
       } catch (error) {
@@ -145,6 +145,7 @@ export default class TextMarquee extends PureComponent {
   render() {
     const { style, children, repeatSpacer, ... props } = this.props
     const { animating, contentFits } = this.state
+
     return (
       <View style={[styles.container]}>
         <Text 
