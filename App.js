@@ -1,19 +1,128 @@
-import React, { PureComponent } from 'react';
-import { Animated, StyleSheet, Text, View, ScrollView } from 'react-native';
+import React, { PureComponent } from 'react'
+import { 
+  Animated, 
+  StyleSheet, 
+  Text, 
+  View, 
+  ScrollView, 
+  NativeModules, 
+  findNodeHandle 
+} from 'react-native'
+
+const { UIManager } = NativeModules
 
 class TextMarquee extends PureComponent {
+
+  static defaultProps = {
+    style:             {},
+    duration:          3000,
+    loop:              false,
+    marqueeOnStart:    false,
+    marqueeDelay:      0,
+    marqueeResetDelay: 0,
+    onMarqueeComplete: () => {},
+    useNativeDriver:   true
+  }
+
+  animatedValue = new Animated.Value(0)
+  contentFits = false
+  distance = null;
+  textRef = null;
+  containerRef = null;
 
   state = {
     animating: false
   }
 
-  animatedValue = new Animated.Value(0)
+  componentDidMount() {
+    this.invalidateMetrics()
+    const { marqueeDelay, marqeeOnStart } = this.props
+    // TODO: use marqueeOnStart
+    if (true) {
+      this.startAnimation(marqueeDelay)
+    }
+  }
 
-  render(){
-    const { children, style, ...rest } = this.props
+  startAnimation = (timeDelay) => {
+    if (this.state.animating) {
+      return
+    }
+    console.log('in startAnimation')
+    this.start(timeDelay)
+  }
+
+  start = (timeDelay) => {
+    const { duration, loop, onMarqueeComplete, useNativeDriver } = this.props 
+
+    const callback = () => {
+      this.setState({ animating: true })
+
+      setTimeout(() => {
+        this.calculateMetrics()
+        console.log(this.contentFits)
+        if (!this.contentFits) {
+          Animated.timing(this.animatedValue, {
+            toValue:         -this.distance,
+            duration:        duration,
+            useNativeDriver: true
+          }).start(({ finished }) => {
+            console.log({finished})
+            if (finished) {
+              if (loop) {
+                // Loop over
+              } else {
+                this.stop()
+                onMarqueeComplete()
+              }
+            }
+          })
+        }
+      }, 100)
+    }
+    // TODO: Use timeDelay instead of 1000
+    setTimeout(callback, 1000)
+  }
+
+  stop() {
+    this.animatedValue.setValue(0)
+    this.setState({ animating: false })
+  }
+  
+  async calculateMetrics() {
+    try {
+      const measureWidth = node => 
+        new Promise(resolve => {
+          UIManager.measure(findNodeHandle(node), (x, y, w) => {
+            console.log('Width: ' + w)
+            return resolve(w)
+          })
+        })
+      
+      const [containerWidth, textWidth] = await Promise.all([
+        measureWidth(this.containerRef),
+        measureWidth(this.textRef)
+      ])
+
+      this.distance = textWidth - containerWidth
+      this.contentFits = this.distance < 0
+      console.log(`distance: ${this.distance}, contentFits: ${this.contentFits}`)
+
+      return []
+    } catch (error) {
+      console.warn(error)
+    }
+  }
+
+  invalidateMetrics = () => {
+    this.distance = null
+    this.contentFits = false
+  }
+
+  render() {
+    const { children, style, ... rest } = this.props
     const { animating } = this.state
     // const { width, height } = StyleSheet.flatten(style)
-    return(
+    return (
       <View style={[styles.container]}>
         <Text 
           {...rest} 
@@ -23,13 +132,16 @@ class TextMarquee extends PureComponent {
           {children}
         </Text>
         <ScrollView
+          ref={c => (this.containerRef = c)}
           horizontal
           scrollEnabled={false}
           showsHorizontalScrollIndicator={false}
           style={StyleSheet.absoluteFillObject}
           display={animating ? 'flex' : 'none'}
+          onContentSizeChange={() => this.calculateMetrics()}
         >
           <Animated.Text
+            ref={c => (this.textRef = c)}
             numberOfLines={1}
             {... rest}
             style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
@@ -40,16 +152,19 @@ class TextMarquee extends PureComponent {
       </View>
     )
   }
+
 }
 
 export default class App extends React.Component {
+
   render() {
     return (
       <View style={astyles.container}>
-        <TextMarquee style={{ backgroundColor: 'red' }}>Super long piece of text is long. The quick brown fox jumps over the lazy dog.</TextMarquee>
+        <TextMarquee>Super long piece of text is long. The quick brown fox jumps over the lazy dog.</TextMarquee>
       </View>
-    );
+    )
   }
+
 }
 
 const styles = StyleSheet.create({
@@ -60,9 +175,9 @@ const styles = StyleSheet.create({
 
 const astyles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex:            1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+    alignItems:      'center',
+    justifyContent:  'center'
+  }
+})
