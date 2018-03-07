@@ -15,7 +15,7 @@ class TextMarquee extends PureComponent {
 
   static defaultProps = {
     style:             {},
-    duration:          3000,
+    duration:          5000,
     loop:              true,
     marqueeOnStart:    false,
     marqueeDelay:      0,
@@ -41,11 +41,12 @@ class TextMarquee extends PureComponent {
     if (true) {
       this.startAnimation(marqueeDelay)
     }
+    // this.animatedValue.addListener((e) => console.log(e))
   }
 
   resetAnimation() {
     const marqueeResetDelay = Math.max(100, this.props.marqueeResetDelay)
-    this.animatedValue.setValue(0)
+    this.animatedValue.setValue(this.containerWidth)
     this.setState({ animating: false }, () => {
       this.startAnimation(marqueeResetDelay)
     })
@@ -59,37 +60,64 @@ class TextMarquee extends PureComponent {
     this.start(timeDelay)
   }
 
-  start = (timeDelay) => {
+  start = async (timeDelay) => {
     const { duration, loop, onMarqueeComplete, useNativeDriver } = this.props 
-
-    const callback = () => {
-      this.setState({ animating: true })
-
-      setTimeout(() => {
-        this.calculateMetrics()
-        console.log(this.contentFits)
+    
+    this.setState({ animating: true })
+    if (!this.containerWidth || this.animatedValue._value === this.containerWidth) {
+      // Keep checking layout until it's on the page
+      this.setTimeout(async () => {
+        await this.calculateMetrics()
         if (!this.contentFits) {
           Animated.timing(this.animatedValue, {
-            toValue:         -this.distance,
-            duration:        duration,
-            useNativeDriver: true
+            toValue: -this.distance - this.containerWidth,
+            duration,
+            useNativeDriver
           }).start(({ finished }) => {
-            console.log({finished})
             if (finished) {
               if (loop) {
-                // Loop over
-                this.resetAnimation()
-              } else {
-                this.stop()
-                onMarqueeComplete()
+                this.animatedValue.setValue(this.containerWidth)
+                this.start()
               }
             }
           })
         }
       }, 100)
+    } else {
+      this.clearTimeout(this.timer)
     }
-    // TODO: Use timeDelay instead of 1000
-    setTimeout(callback, 1000)
+
+    // const callback = () => {
+    //   if (!this.contentFits) {
+    //     console.log(this.distance, this.containerWidth)
+    //     Animated.timing(this.animatedValue, {
+    //       toValue:         -this.distance - this.containerWidth,
+    //       duration:        duration,
+    //       useNativeDriver: true
+    //     }).start()
+    //   }
+    // }
+
+
+    // const callback = () => {
+    //   this.setState({ animating: true })
+
+    //   this.setTimeout(() => {
+    //     this.calculateMetrics()
+    //     console.log(this.contentFits)
+    //     if (!this.contentFits) {
+    //       Animated.loop(
+    //         Animated.timing(this.animatedValue, {
+    //           toValue:         -this.distance - this.containerWidth,
+    //           duration:        duration,
+    //           useNativeDriver: true
+    //         })
+    //       ).start()
+    //     }
+    //   }, 100)
+    // }
+    // // TODO: Use timeDelay instead of 1000
+    // this.setTimeout(callback, 1000)
   }
 
   stop() {
@@ -98,34 +126,51 @@ class TextMarquee extends PureComponent {
   }
   
   async calculateMetrics() {
-    try {
-      const measureWidth = node => 
-        new Promise(resolve => {
-          UIManager.measure(findNodeHandle(node), (x, y, w) => {
-            console.log('Width: ' + w)
-            return resolve(w)
+    return new Promise(async (resolve, reject) => {
+      try {
+        const measureWidth = node => 
+          new Promise(resolve => {
+            UIManager.measure(findNodeHandle(node), (x, y, w) => {
+              console.log('Width: ' + w)
+              return resolve(w)
+            })
           })
-        })
-      
-      const [containerWidth, textWidth] = await Promise.all([
-        measureWidth(this.containerRef),
-        measureWidth(this.textRef)
-      ])
+        
+        const [containerWidth, textWidth] = await Promise.all([
+          measureWidth(this.containerRef),
+          measureWidth(this.textRef)
+        ])
+  
+        this.containerWidth = containerWidth
+        this.distance = textWidth - containerWidth
+        this.contentFits = this.distance < 0
+        console.log(`distance: ${this.distance}, contentFits: ${this.contentFits}`)
+        resolve([])
 
-      this.distance = textWidth - containerWidth
-      this.contentFits = this.distance < 0
-      console.log(`distance: ${this.distance}, contentFits: ${this.contentFits}`)
-
-      return []
-    } catch (error) {
-      console.warn(error)
-    }
+      } catch (error) {
+        console.warn(error)
+      }
+    })
   }
 
   invalidateMetrics = () => {
     this.distance = null
     this.contentFits = false
   }
+
+  clearTimeout() {
+    if (this.timer) {
+      clearTimeout(this.timer)
+      this.timer = null
+      // console.log("Currently running timeout is cleared!!!");
+    }
+  }
+
+  setTimeout(fn: Function, time: number = 0) {
+    this.clearTimeout()
+    this.timer = setTimeout(fn, time)
+  }
+  
 
   render() {
     const { children, style, ... rest } = this.props
