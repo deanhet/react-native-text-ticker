@@ -9,6 +9,11 @@ import {
   findNodeHandle 
 } from 'react-native'
 
+/* TODO:
+- If text is only slightly wider than screen then bounce text instead
+- Change duration from a time to based on text width
+*/
+
 const { UIManager } = NativeModules
 
 class TextMarquee extends PureComponent {
@@ -35,13 +40,15 @@ class TextMarquee extends PureComponent {
   }
 
   componentDidMount() {
+    const { style, ... rest } = this.props
+
+    this.setState({ children: [this.props.children]})
     this.invalidateMetrics()
     const { marqueeDelay, marqeeOnStart } = this.props
     // TODO: use marqueeOnStart
     if (true) {
       this.startAnimation(marqueeDelay)
     }
-    // this.animatedValue.addListener((e) => console.log(e))
   }
 
   resetAnimation() {
@@ -62,12 +69,12 @@ class TextMarquee extends PureComponent {
 
   animate = () => {
     Animated.timing(this.animatedValue, {
-      toValue:         -this.distance - this.containerWidth,
+      toValue:         -this.textWidth - 50,
       duration:        this.props.duration,
       useNativeDriver: true
     }).start(({ finished }) => {
       if (finished) {
-        this.animatedValue.setValue(this.containerWidth)
+        this.animatedValue.setValue(0)
         this.animate()
       }
     })
@@ -106,6 +113,7 @@ class TextMarquee extends PureComponent {
         ])
   
         this.containerWidth = containerWidth
+        this.textWidth = textWidth
         this.distance = textWidth - containerWidth
         this.contentFits = this.distance < 0
         console.log(`distance: ${this.distance}, contentFits: ${this.contentFits}`)
@@ -137,9 +145,10 @@ class TextMarquee extends PureComponent {
   
 
   render() {
-    const { children, style, ... rest } = this.props
-    const { animating } = this.state
+    const { style, ... rest } = this.props
+    const { animating, children } = this.state
     // const { width, height } = StyleSheet.flatten(style)
+
     return (
       <View style={[styles.container]}>
         <Text 
@@ -147,7 +156,7 @@ class TextMarquee extends PureComponent {
           numberOfLines={1}
           style={[style, { opacity: animating ? 0 : 1 }]}
         >
-          {children}
+          {this.props.children}
         </Text>
         <ScrollView
           ref={c => (this.containerRef = c)}
@@ -159,12 +168,22 @@ class TextMarquee extends PureComponent {
           onContentSizeChange={() => this.calculateMetrics()}
         >
           <Animated.Text
+            key={'test'}
             ref={c => (this.textRef = c)}
             numberOfLines={1}
             {... rest}
             style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
           >
-            {children}
+            {this.props.children}           
+          </Animated.Text>
+          <View key="spacer" style={{ width: 50 }} />
+          <Animated.Text
+            key={'otherTest'}
+            numberOfLines={1}
+            {... rest}
+            style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
+          >
+            {this.props.children}           
           </Animated.Text>
         </ScrollView>
       </View>
