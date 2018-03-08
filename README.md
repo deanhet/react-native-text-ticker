@@ -2,7 +2,7 @@
 
 
 ## Screenshot
-
+![examples](./example/media/example.gif)
 
 ## Description
 Inspired from the great [react-native-marquee](https://github.com/kyo504/react-native-marquee), this module acts similarly but with a few extra features and props:
