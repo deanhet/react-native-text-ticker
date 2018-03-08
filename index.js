@@ -88,12 +88,12 @@ export default class TextMarquee extends PureComponent {
     this.setTimeout(() => {
       Animated.sequence([
         Animated.timing(this.animatedValue, {
-          toValue:         -this.distance - 5,
+          toValue:         -this.distance - 10,
           duration:        duration || children.length * 50,
           useNativeDriver: useNativeDriver        
         }),
         Animated.timing(this.animatedValue, {
-          toValue:         0,
+          toValue:         10,
           duration:        duration || children.length * 50,
           useNativeDriver: useNativeDriver        
         })        
