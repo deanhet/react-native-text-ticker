@@ -1,5 +1,5 @@
 {
-  "name": "TextMarquee",
+  "name": "react-native-text-ticker",
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
