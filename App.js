@@ -5,7 +5,7 @@ import {
   View, 
   TouchableOpacity
 } from 'react-native'
-import TextMarquee from './index'
+import TextTicker from './index'
 
 export default class App extends PureComponent {
 
@@ -21,21 +21,21 @@ export default class App extends PureComponent {
           <Text>Stop Animation</Text>
         </TouchableOpacity>
 
-        <TextMarquee marqueeOnMount={false} ref={c => this.marqueeRef = c}>
+        <TextTicker marqueeOnMount={false} ref={c => this.marqueeRef = c}>
           Super long piece of text is long. The quick brown fox jumps over the lazy dog.
-        </TextMarquee>
+        </TextTicker>
         <Spacer />
-        <TextMarquee>
+        <TextTicker>
           Super long piece of text is long. The quick brown fox jumps over the lazy dog.
-        </TextMarquee>
+        </TextTicker>
         <Spacer />
-        <TextMarquee >
+        <TextTicker >
           This fits in its container and wont scroll
-        </TextMarquee>
+        </TextTicker>
         <Spacer />
-        <TextMarquee >
+        <TextTicker >
           This is an example that's only slightly longer so it bounces sides
-        </TextMarquee>
+        </TextTicker>
       </View>
     )
   }
