@@ -19,6 +19,7 @@ export default class TextMarquee extends PureComponent {
     duration:        PropTypes.number,
     loop:            PropTypes.bool,
     bounce:          PropTypes.bool,
+    scroll:          PropTypes.bool,
     marqueeOnMount:  PropTypes.bool,
     marqueeDelay:    PropTypes.number,
     useNativeDriver: PropTypes.bool,
@@ -30,6 +31,7 @@ export default class TextMarquee extends PureComponent {
     style:             {},
     loop:              true,
     bounce:            true,
+    scroll:            true,
     marqueeOnMount:    true,
     marqueeDelay:      0,
     useNativeDriver:   true,
@@ -44,7 +46,8 @@ export default class TextMarquee extends PureComponent {
   state = {
     animating:    false,
     contentFits:  false,
-    shouldBounce: false
+    shouldBounce: false,
+    isScrolling:  false
   }
 
   componentDidMount() {
@@ -170,10 +173,19 @@ export default class TextMarquee extends PureComponent {
     this.timer = setTimeout(fn, time)
   }
 
-  render() {
-    const { style, children, repeatSpacer, ... props } = this.props
-    const { animating, contentFits } = this.state
+  onScroll = () => {
+    this.clearTimeout()
+    this.setState({ isScrolling: true })
+    this.animatedValue.setValue(0)
+    this.setTimeout(() => {
+      this.setState({ isScrolling: false })
+      this.start()
+    }, this.props.marqueeDelay || 3000)
+  }
 
+  render() {
+    const { style, children, repeatSpacer, scroll, ... props } = this.props
+    const { animating, contentFits, isScrolling } = this.state
     return (
       <View style={[styles.container]}>
         <Text 
@@ -186,7 +198,9 @@ export default class TextMarquee extends PureComponent {
         <ScrollView
           ref={c => (this.containerRef = c)}
           horizontal
-          scrollEnabled={false}
+          scrollEnabled={scroll ? !this.state.contentFits : false}
+          scrollEventThrottle={16}
+          onScroll={this.onScroll}
           showsHorizontalScrollIndicator={false}
           style={StyleSheet.absoluteFillObject}
           display={animating ? 'flex' : 'none'}
@@ -200,7 +214,7 @@ export default class TextMarquee extends PureComponent {
           >
             {this.props.children}           
           </Animated.Text>
-          {!contentFits
+          {!contentFits && !isScrolling
             ? <View style={{ paddingLeft: repeatSpacer }}>
               <Animated.Text
                 numberOfLines={1}
