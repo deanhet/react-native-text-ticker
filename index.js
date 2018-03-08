@@ -18,6 +18,7 @@ export default class TextMarquee extends PureComponent {
     style:           PropTypes.object,
     duration:        PropTypes.number,
     loop:            PropTypes.bool,
+    bounce:          PropTypes.bool,
     marqueeOnMount:  PropTypes.bool,
     marqueeDelay:    PropTypes.number,
     useNativeDriver: PropTypes.bool,
@@ -28,6 +29,7 @@ export default class TextMarquee extends PureComponent {
   static defaultProps = {
     style:             {},
     loop:              true,
+    bounce:            true,
     marqueeOnMount:    true,
     marqueeDelay:      0,
     useNativeDriver:   true,
@@ -105,7 +107,7 @@ export default class TextMarquee extends PureComponent {
     this.setTimeout(async () => {
       await this.calculateMetrics()
       if (!this.state.contentFits) {
-        if (this.state.shouldBounce) {
+        if (this.state.shouldBounce && this.props.bounce) {
           this.animateBounce()
         } else {
           this.animateScroll()
