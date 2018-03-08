@@ -10,10 +10,6 @@ import {
 } from 'react-native'
 import PropTypes from 'prop-types'
 
-/* TODO:
-- If text is only slightly wider than screen then bounce text instead
-*/
-
 const { UIManager } = NativeModules
 
 export default class TextMarquee extends PureComponent {
@@ -44,8 +40,9 @@ export default class TextMarquee extends PureComponent {
   containerRef = null
 
   state = {
-    animating:   false,
-    contentFits: false
+    animating:    false,
+    contentFits:  false,
+    shouldBounce: false
   }
 
   componentDidMount() {
@@ -63,7 +60,7 @@ export default class TextMarquee extends PureComponent {
     this.start(timeDelay)
   }
 
-  animate = () => {
+  animateScroll = () => {
     const {duration, marqueeDelay, loop, useNativeDriver, repeatSpacer, children} = this.props 
     this.setTimeout(() => {
       Animated.timing(this.animatedValue, {
@@ -74,8 +71,30 @@ export default class TextMarquee extends PureComponent {
         if (finished) {
           if (loop) {
             this.animatedValue.setValue(0)
-            this.animate()
+            this.animateScroll()
           }
+        }
+      })
+    }, marqueeDelay)
+  }
+
+  animateBounce = () => {
+    const {duration, marqueeDelay, loop, useNativeDriver, children} = this.props
+    this.setTimeout(() => {
+      Animated.sequence([
+        Animated.timing(this.animatedValue, {
+          toValue:         -this.distance - 5,
+          duration:        duration || children.length * 50,
+          useNativeDriver: useNativeDriver        
+        }),
+        Animated.timing(this.animatedValue, {
+          toValue:         0,
+          duration:        duration || children.length * 50,
+          useNativeDriver: useNativeDriver        
+        })        
+      ]).start(({finished}) => {
+        if (loop) {
+          this.animateBounce()
         }
       })
     }, marqueeDelay)
@@ -86,14 +105,18 @@ export default class TextMarquee extends PureComponent {
     this.setTimeout(async () => {
       await this.calculateMetrics()
       if (!this.state.contentFits) {
-        this.animate()
+        if (this.state.shouldBounce) {
+          this.animateBounce()
+        } else {
+          this.animateScroll()
+        }
       }
     }, 100)
   }
 
   stopAnimation() {
     this.animatedValue.setValue(0)
-    this.setState({ animating: false })
+    this.setState({ animating: false, shouldBounce: false })
   }
   
   async calculateMetrics() {
@@ -115,7 +138,11 @@ export default class TextMarquee extends PureComponent {
         this.containerWidth = containerWidth
         this.textWidth = textWidth
         this.distance = textWidth - containerWidth
-        this.setState({ contentFits: this.distance <= 0 })
+                
+        this.setState({ 
+          contentFits:  this.distance <= 0,
+          shouldBounce: this.distance < this.containerWidth / 8
+        })
         // console.log(`distance: ${this.distance}, contentFits: ${this.state.contentFits}`)
         resolve([])
       } catch (error) {
