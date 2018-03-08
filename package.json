@@ -1,26 +1,29 @@
 {
   "name": "react-native-text-ticker",
   "version": "0.1.0",
-  "private": true,
-  "devDependencies": {
-    "react-native-scripts": "1.11.1",
-    "jest-expo": "25.0.0",
-    "react-test-renderer": "16.2.0"
+  "description": "React Native Text Ticker/Marquee Component",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
   },
-  "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
-  "scripts": {
-    "start": "react-native-scripts start",
-    "eject": "react-native-scripts eject",
-    "android": "react-native-scripts android",
-    "ios": "react-native-scripts ios",
-    "test": "node node_modules/jest/bin/jest.js"
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:deanhet/react-native-text-ticker.git"
   },
-  "jest": {
-    "preset": "jest-expo"
+  "keywords": [
+    "react-native",
+    "marquee",
+    "android",
+    "ios",
+    "text",
+    "scroller",
+    "ticker",
+    "scrolling"
+  ],
+  "author": "Dean Hetherington <deanhet@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/deanhet/react-native-text-ticker/issues"
   },
-  "dependencies": {
-    "expo": "^25.0.0",
-    "react": "16.2.0",
-    "react-native": "0.52.0"
-  }
+  "homepage": "https://github.com/deanhet/react-native-text-ticker/"
 }

@@ -5,7 +5,7 @@ import {
   View, 
   TouchableOpacity
 } from 'react-native'
-import TextTicker from './index'
+import TextTicker from '../index.js'
 
 export default class App extends PureComponent {
 
