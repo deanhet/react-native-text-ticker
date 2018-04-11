@@ -14,6 +14,8 @@ Inspired from the great [react-native-marquee](https://github.com/kyo504/react-n
 
 To see it in action check out the example!
 
+This package aims to only support the latest version of React-Native.
+
 ## Installation
 ```
 npm install --save react-native-text-ticker

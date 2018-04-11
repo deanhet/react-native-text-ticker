@@ -148,7 +148,9 @@ export default class TextMarquee extends PureComponent {
         this.distance = textWidth - containerWidth
                 
         this.setState({ 
-          contentFits:  this.distance <= 0,
+          // Is 1 instead of 0 to get round rounding errors from:
+          // https://github.com/facebook/react-native/commit/a534672
+          contentFits:  this.distance <= 1,
           shouldBounce: this.distance < this.containerWidth / 8
         })
         // console.log(`distance: ${this.distance}, contentFits: ${this.state.contentFits}`)
