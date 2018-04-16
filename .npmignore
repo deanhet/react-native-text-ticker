@@ -4,6 +4,8 @@
 
 # node.js
 #
+./expo
+example/
 node_modules/
 npm-debug.log
 yarn-error.log
