@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react'
 import { 
-  Animated, 
+  Animated,
+  Easing,
   StyleSheet, 
   Text, 
   View, 
@@ -27,7 +28,8 @@ export default class TextMarquee extends PureComponent {
     marqueeDelay:    PropTypes.number,
     useNativeDriver: PropTypes.bool,
     children:        PropTypes.string,
-    repeatSpacer:    PropTypes.number
+    repeatSpacer:    PropTypes.number,
+    easing:          PropTypes.func
   }
 
   static defaultProps = {
@@ -38,7 +40,8 @@ export default class TextMarquee extends PureComponent {
     marqueeOnMount:    true,
     marqueeDelay:      0,
     useNativeDriver:   true,
-    repeatSpacer:      50
+    repeatSpacer:      50,
+    easing:            Easing.ease
   }
 
   animatedValue = new Animated.Value(0)
@@ -69,11 +72,12 @@ export default class TextMarquee extends PureComponent {
   }
 
   animateScroll = () => {
-    const {duration, marqueeDelay, loop, useNativeDriver, repeatSpacer, children} = this.props 
+    const {duration, marqueeDelay, loop, useNativeDriver, repeatSpacer, easing, children} = this.props 
     this.setTimeout(() => {
       Animated.timing(this.animatedValue, {
         toValue:         -this.textWidth - repeatSpacer,
         duration:        duration || children.length * 150,
+        easing:          easing,
         useNativeDriver: useNativeDriver
       }).start(({ finished }) => {
         if (finished) {
@@ -87,17 +91,19 @@ export default class TextMarquee extends PureComponent {
   }
 
   animateBounce = () => {
-    const {duration, marqueeDelay, loop, useNativeDriver, children} = this.props
+    const {duration, marqueeDelay, loop, useNativeDriver, easing, children} = this.props
     this.setTimeout(() => {
       Animated.sequence([
         Animated.timing(this.animatedValue, {
           toValue:         -this.distance - 10,
           duration:        duration || children.length * 50,
+          easing:          easing,
           useNativeDriver: useNativeDriver        
         }),
         Animated.timing(this.animatedValue, {
           toValue:         10,
           duration:        duration || children.length * 50,
+          easing:          easing,
           useNativeDriver: useNativeDriver        
         })        
       ]).start(({finished}) => {
