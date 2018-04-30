@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
 | marqueeDelay    | number    | true     |  0       | Number of milliseconds to wait before starting marquee
 | useNativeDriver | boolean   | true     | true     | Use native animation driver, should remain true for large majority of use-cases
 | repeatSpacer    | number    | true     | 50       | The space between the end of your text string ticker and the beginning of it starting again.
+| easing          | function  | true     | Easing.ease | How the text scrolling animates. Additional options available from the [Easing module](https://facebook.github.io/react-native/docs/easing.html)
 
 ## Methods
 These methods are optional and can be accessed by accessing the ref:
