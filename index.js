@@ -16,10 +16,7 @@ const { UIManager } = NativeModules
 export default class TextMarquee extends PureComponent {
 
   static propTypes = {
-    style:           PropTypes.oneOfType([
-      PropTypes.object,
-      PropTypes.array
-    ]),
+    style:           Text.propTypes.style,
     duration:        PropTypes.number,
     loop:            PropTypes.bool,
     bounce:          PropTypes.bool,
