@@ -48,9 +48,9 @@ export default class TextMarquee extends PureComponent {
 
   state = {
     animating:    false,
-    contentFits:  false,
+    contentFits:  true,
     shouldBounce: false,
-    isScrolling:  false
+    isScrolling:  true
   }
 
   componentDidMount() {
