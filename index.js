@@ -24,7 +24,9 @@ export default class TextMarquee extends PureComponent {
     marqueeOnMount:  PropTypes.bool,
     marqueeDelay:    PropTypes.number,
     useNativeDriver: PropTypes.bool,
-    children:        PropTypes.array,
+    children:        PropTypes.oneOfType([
+                        PropTypes.string,
+                        PropTypes.array]),
     repeatSpacer:    PropTypes.number,
     easing:          PropTypes.func
   }
