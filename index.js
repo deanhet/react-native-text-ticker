@@ -16,15 +16,16 @@ const { UIManager } = NativeModules
 export default class TextMarquee extends PureComponent {
 
   static propTypes = {
-    style:           Text.propTypes.style,
-    duration:        PropTypes.number,
-    loop:            PropTypes.bool,
-    bounce:          PropTypes.bool,
-    scroll:          PropTypes.bool,
-    marqueeOnMount:  PropTypes.bool,
-    marqueeDelay:    PropTypes.number,
-    useNativeDriver: PropTypes.bool,
-    children:        PropTypes.oneOfType([
+    style:             Text.propTypes.style,
+    duration:          PropTypes.number,
+    loop:              PropTypes.bool,
+    bounce:            PropTypes.bool,
+    scroll:            PropTypes.bool,
+    marqueeOnMount:    PropTypes.bool,
+    marqueeDelay:      PropTypes.number,
+    useNativeDriver:   PropTypes.bool,
+    onMarqueeComplete: PropTypes.bool,
+    children:          PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.array
     ]),
@@ -72,7 +73,16 @@ export default class TextMarquee extends PureComponent {
   }
 
   animateScroll = () => {
-    const {duration, marqueeDelay, loop, useNativeDriver, repeatSpacer, easing, children} = this.props 
+    const {
+      duration, 
+      marqueeDelay, 
+      loop, 
+      useNativeDriver, 
+      repeatSpacer, 
+      easing, 
+      children,
+      onMarqueeComplete
+    } = this.props 
     this.setTimeout(() => {
       Animated.timing(this.animatedValue, {
         toValue:         -this.textWidth - repeatSpacer,
@@ -81,6 +91,9 @@ export default class TextMarquee extends PureComponent {
         useNativeDriver: useNativeDriver
       }).start(({ finished }) => {
         if (finished) {
+          if (onMarqueeComplete) {
+            onMarqueeComplete()
+          }
           if (loop) {
             this.animatedValue.setValue(0)
             this.animateScroll()

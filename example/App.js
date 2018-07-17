@@ -25,7 +25,7 @@ export default class App extends PureComponent {
           Super long piece of text is long. The quick brown fox jumps over the lazy dog.
         </TextTicker>
         <Spacer />
-        <TextTicker>
+        <TextTicker onMarqueeComplete={() => console.log('Scroll Completed!')}>
           Super long piece of text is long. The quick brown fox jumps over the lazy dog.
         </TextTicker>
         <Spacer />
