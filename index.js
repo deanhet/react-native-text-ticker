@@ -13,7 +13,7 @@ import PropTypes from 'prop-types'
 
 const { UIManager } = NativeModules
 
-export default class TextMarquee extends React.Component {
+export default class TextMarquee extends React.PureComponent {
 
   static propTypes = {
     style:             Text.propTypes.style,
