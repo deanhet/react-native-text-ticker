@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import * as React                 from 'react'
 import {
   Animated,
   Easing,
@@ -13,7 +13,7 @@ import PropTypes from 'prop-types'
 
 const { UIManager } = NativeModules
 
-export default class TextMarquee extends PureComponent {
+export default class TextMarquee extends React.PureComponent {
 
   static propTypes = {
     style:             Text.propTypes.style,
@@ -25,12 +25,9 @@ export default class TextMarquee extends PureComponent {
     marqueeDelay:      PropTypes.number,
     useNativeDriver:   PropTypes.bool,
     onMarqueeComplete: PropTypes.func,
-    children:          PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.array
-    ]),
-    repeatSpacer:    PropTypes.number,
-    easing:          PropTypes.func
+    children:          PropTypes.string,
+    repeatSpacer:      PropTypes.number,
+    easing:            PropTypes.func
   }
 
   static defaultProps = {
@@ -70,10 +67,16 @@ export default class TextMarquee extends PureComponent {
     // always stop timers when unmounting, common source of crash
     this.clearTimeout();
   }
+  
+  componentWillReceiveProps(nextProps){
+    if(this.props.children !== nextProps.children){
+      this.calculateMetrics()
+    }
+  }
 
   startAnimation = (timeDelay) => {
     if (this.state.animating) {
-      return
+      this.stopAnimation()
     }
     this.start(timeDelay)
   }
@@ -161,7 +164,6 @@ export default class TextMarquee extends PureComponent {
             const nodeHandle = findNodeHandle(node);
             if (nodeHandle) {
               UIManager.measure(nodeHandle, (x, y, w) => {
-                // console.log('Width: ' + w)
                 return resolve(w)
               })
             } else {
@@ -177,14 +179,20 @@ export default class TextMarquee extends PureComponent {
         this.containerWidth = containerWidth
         this.textWidth = textWidth
         this.distance = textWidth - containerWidth
+        const contentFits = this.distance <= 1
 
         this.setState({
           // Is 1 instead of 0 to get round rounding errors from:
           // https://github.com/facebook/react-native/commit/a534672
-          contentFits:  this.distance <= 1,
+          contentFits:  contentFits,
           shouldBounce: this.distance < this.containerWidth / 8
+        }, () => {
+          if(contentFits){
+            this.stopAnimation()
+          }else {
+            this.startAnimation()
+          }
         })
-        // console.log(`distance: ${this.distance}, contentFits: ${this.state.contentFits}`)
         resolve([])
       } catch (error) {
         console.warn('react-native-text-ticker: could not calculate metrics', error);
@@ -222,47 +230,43 @@ export default class TextMarquee extends PureComponent {
   render() {
     const { style, children, repeatSpacer, scroll, ... props } = this.props
     const { animating, contentFits, isScrolling } = this.state
-    return (
-      <View style={[styles.container]}>
-        <Text
-          {...props}
+    
+    return <View style={[styles.container]}>
+      <Text
+        {...props}
+        numberOfLines={1}
+        style={[style, { opacity: animating ? 0 : 1}]}>
+        {this.props.children}
+      </Text>
+      <ScrollView
+        ref={c => (this.containerRef = c)}
+        horizontal
+        scrollEnabled={scroll ? !this.state.contentFits : false}
+        scrollEventThrottle={16}
+        onScroll={this.onScroll}
+        showsHorizontalScrollIndicator={false}
+        style={[{opacity: animating ? 1 : 0}, styles.animatingContainer]}
+        onContentSizeChange={() => this.calculateMetrics()}
+        onLayout={() => this.calculateMetrics()}>
+        <Animated.Text
+          ref={c => (this.textRef = c)}
           numberOfLines={1}
-          style={[style, { opacity: animating ? 0 : 1 }]}
-        >
+          {... props}
+          style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}>
           {this.props.children}
-        </Text>
-        <ScrollView
-          ref={c => (this.containerRef = c)}
-          horizontal
-          scrollEnabled={scroll ? !this.state.contentFits : false}
-          scrollEventThrottle={16}
-          onScroll={this.onScroll}
-          showsHorizontalScrollIndicator={false}
-          style={StyleSheet.absoluteFillObject}
-          display={animating ? 'flex' : 'none'}
-          onContentSizeChange={() => this.calculateMetrics()}
-        >
-          <Animated.Text
-            ref={c => (this.textRef = c)}
-            numberOfLines={1}
-            {... props}
-            style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
-          >
-            {this.props.children}
-          </Animated.Text>
-          {!contentFits && !isScrolling
-            ? <View style={{ paddingLeft: repeatSpacer }}>
-              <Animated.Text
-                numberOfLines={1}
-                {... props}
-                style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
-              >
-                {this.props.children}
-              </Animated.Text>
-            </View> : null }
-        </ScrollView>
-      </View>
-    )
+        </Animated.Text>
+
+        {!contentFits && !isScrolling
+          ? <View style={{ paddingLeft: repeatSpacer }}>
+            <Animated.Text
+              numberOfLines={1}
+              {... props}
+              style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}>
+              {this.props.children}
+            </Animated.Text>
+          </View> : null }
+      </ScrollView>
+    </View>
   }
 
 }
@@ -270,6 +274,9 @@ export default class TextMarquee extends PureComponent {
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden'
+  },
+  
+  animatingContainer: {
+    ...StyleSheet.absoluteFillObject
   }
 })
-
