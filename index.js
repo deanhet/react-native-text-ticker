@@ -269,12 +269,7 @@ export default class TextMarquee extends React.PureComponent {
               </Animated.Text>
             </View> : null }
         </ScrollView>
-        <LinearGradient 
-          start={{x: 0, y: 0}} 
-          end={{x: 1, y: 0}} 
-          locations={[.0, .02, .8, .98, 1]} 
-          colors={darkTheme ? colors.darkTheme : colors.lightTheme} 
-          style={{...StyleSheet.absoluteFillObject}}/>
+        <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} locations={[.0, .02, .75, .98, 1]} colors={darkTheme ? colors.darkTheme : colors.lightTheme} style={{...StyleSheet.absoluteFillObject}}/>
       </View>
     </View>
   }
@@ -282,8 +277,8 @@ export default class TextMarquee extends React.PureComponent {
 }
 
 const colors = {
-  lightTheme: ['white', 'rgba(255, 255, 255, .00)', 'rgba(255, 255, 255, .00)', 'rgba(255, 255, 255, .00)', 'white'],
-  darkTheme: ['black', 'rgba(00, 00, 00, .00)', 'rgba(00, 00, 00, .00)', 'rgba(00, 00, 00, .00)', 'black']
+  lightTheme: ['white', 'rgba(255, 255, 255, .00)', 'rgba(255, 255, 255, .00)', 'rgba(255, 255, 255, 00)', 'white'],
+  darkTheme: ['black', 'rgba(00, 00, 00, .00)', 'rgba(00, 00, 00, .00)', 'rgba(00, 00, 00, 0)', 'black']
 }
 
 const styles = StyleSheet.create({
