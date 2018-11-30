@@ -10,6 +10,7 @@ import {
   findNodeHandle
 } from 'react-native'
 import PropTypes from 'prop-types'
+import LinearGradient             from 'react-native-linear-gradient'
 
 const { UIManager } = NativeModules
 
@@ -27,7 +28,8 @@ export default class TextMarquee extends React.PureComponent {
     onMarqueeComplete: PropTypes.func,
     children:          PropTypes.string,
     repeatSpacer:      PropTypes.number,
-    easing:            PropTypes.func
+    easing:            PropTypes.func,
+    darkTheme:         PropTypes.bool
   }
 
   static defaultProps = {
@@ -228,9 +230,9 @@ export default class TextMarquee extends React.PureComponent {
   }
 
   render() {
-    const { style, children, repeatSpacer, scroll, ... props } = this.props
+    const { style, darkTheme, children, repeatSpacer, scroll, ... props } = this.props
     const { animating, contentFits, isScrolling } = this.state
-    
+
     return <View style={[styles.container]}>
       <Text
         {...props}
@@ -238,37 +240,50 @@ export default class TextMarquee extends React.PureComponent {
         style={[style, { opacity: animating ? 0 : 1}]}>
         {this.props.children}
       </Text>
-      <ScrollView
-        ref={c => (this.containerRef = c)}
-        horizontal
-        scrollEnabled={scroll ? !this.state.contentFits : false}
-        scrollEventThrottle={16}
-        onScroll={this.onScroll}
-        showsHorizontalScrollIndicator={false}
-        style={[{opacity: animating ? 1 : 0}, styles.animatingContainer]}
-        onContentSizeChange={() => this.calculateMetrics()}
-        onLayout={() => this.calculateMetrics()}>
-        <Animated.Text
-          ref={c => (this.textRef = c)}
-          numberOfLines={1}
-          {... props}
-          style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}>
-          {this.props.children}
-        </Animated.Text>
+      <View style={{...StyleSheet.absoluteFillObject, opacity: animating ? 1 : 0}}>
+        <ScrollView
+          ref={c => (this.containerRef = c)}
+          horizontal
+          scrollEnabled={scroll ? !this.state.contentFits : false}
+          scrollEventThrottle={16}
+          onScroll={this.onScroll}
+          showsHorizontalScrollIndicator={false}
+          style={[{opacity: animating ? 1 : 0,}, styles.animatingContainer]}
+          onContentSizeChange={() => this.calculateMetrics()}
+          onLayout={() => this.calculateMetrics()}>
+          <Animated.Text
+            ref={c => (this.textRef = c)}
+            numberOfLines={1}
+            {... props}
+            style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}>
+            {this.props.children}
+          </Animated.Text>
 
-        {!contentFits && !isScrolling
-          ? <View style={{ paddingLeft: repeatSpacer }}>
-            <Animated.Text
-              numberOfLines={1}
-              {... props}
-              style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}>
-              {this.props.children}
-            </Animated.Text>
-          </View> : null }
-      </ScrollView>
+          {!contentFits && !isScrolling
+            ? <View style={{ paddingLeft: repeatSpacer }}>
+              <Animated.Text
+                numberOfLines={1}
+                {... props}
+                style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}>
+                {this.props.children}
+              </Animated.Text>
+            </View> : null }
+        </ScrollView>
+        <LinearGradient 
+          start={{x: 0, y: 0}} 
+          end={{x: 1, y: 0}} 
+          locations={[.0, .02, .8, .98, 1]} 
+          colors={darkTheme ? colors.darkTheme : colors.lightTheme} 
+          style={{...StyleSheet.absoluteFillObject}}/>
+      </View>
     </View>
   }
 
+}
+
+const colors = {
+  lightTheme: ['white', 'rgba(255, 255, 255, .00)', 'rgba(255, 255, 255, .00)', 'rgba(255, 255, 255, .00)', 'white'],
+  darkTheme: ['black', 'rgba(00, 00, 00, .00)', 'rgba(00, 00, 00, .00)', 'rgba(00, 00, 00, .00)', 'black']
 }
 
 const styles = StyleSheet.create({
@@ -278,5 +293,5 @@ const styles = StyleSheet.create({
   
   animatingContainer: {
     ...StyleSheet.absoluteFillObject
-  }
+  },
 })

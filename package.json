@@ -25,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/deanhet/react-native-text-ticker/issues"
   },
-  "homepage": "https://github.com/deanhet/react-native-text-ticker/"
+  "homepage": "https://github.com/deanhet/react-native-text-ticker/",
+  "dependencies": {
+    "react-native-linear-gradient": "^2.5.2"
+  }
 }
