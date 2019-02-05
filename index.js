@@ -23,6 +23,7 @@ export default class TextMarquee extends PureComponent {
     scroll:            PropTypes.bool,
     marqueeOnMount:    PropTypes.bool,
     marqueeDelay:      PropTypes.number,
+    isInteraction:     PropTypes.bool,
     useNativeDriver:   PropTypes.bool,
     onMarqueeComplete: PropTypes.func,
     children:          PropTypes.oneOfType([
@@ -40,6 +41,7 @@ export default class TextMarquee extends PureComponent {
     scroll:            true,
     marqueeOnMount:    true,
     marqueeDelay:      0,
+    isInteraction:     true,
     useNativeDriver:   true,
     repeatSpacer:      50,
     easing:            Easing.ease
@@ -83,6 +85,7 @@ export default class TextMarquee extends PureComponent {
       duration,
       marqueeDelay,
       loop,
+      isInteraction,
       useNativeDriver,
       repeatSpacer,
       easing,
@@ -94,6 +97,7 @@ export default class TextMarquee extends PureComponent {
         toValue:         -this.textWidth - repeatSpacer,
         duration:        duration || children.length * 150,
         easing:          easing,
+        isInteraction:   isInteraction,
         useNativeDriver: useNativeDriver
       }).start(({ finished }) => {
         if (finished) {
@@ -110,19 +114,21 @@ export default class TextMarquee extends PureComponent {
   }
 
   animateBounce = () => {
-    const {duration, marqueeDelay, loop, useNativeDriver, easing, children} = this.props
+    const {duration, marqueeDelay, loop, isInteraction, useNativeDriver, easing, children} = this.props
     this.setTimeout(() => {
       Animated.sequence([
         Animated.timing(this.animatedValue, {
           toValue:         -this.distance - 10,
           duration:        duration || children.length * 50,
           easing:          easing,
+          isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
         }),
         Animated.timing(this.animatedValue, {
           toValue:         10,
           duration:        duration || children.length * 50,
           easing:          easing,
+          isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
         })
       ]).start(({finished}) => {
