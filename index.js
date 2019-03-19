@@ -13,6 +13,12 @@ import PropTypes from 'prop-types'
 
 const { UIManager } = NativeModules
 
+export const TextTickAnimationType = Object.freeze({
+  auto: 'auto',
+  scroll: 'scroll',
+  bounce: 'bounce'
+})
+
 export default class TextMarquee extends PureComponent {
 
   static propTypes = {
@@ -30,8 +36,9 @@ export default class TextMarquee extends PureComponent {
       PropTypes.string,
       PropTypes.array
     ]),
-    repeatSpacer:    PropTypes.number,
-    easing:          PropTypes.func
+    repeatSpacer:      PropTypes.number,
+    easing:            PropTypes.func,
+    animationType:     PropTypes.string, //(values should be from AnimationType, 'auto', 'scroll', 'bounce')
   }
 
   static defaultProps = {
@@ -44,7 +51,8 @@ export default class TextMarquee extends PureComponent {
     isInteraction:     true,
     useNativeDriver:   true,
     repeatSpacer:      50,
-    easing:            Easing.ease
+    easing:            Easing.ease,
+    animationType:     'auto',
   }
 
   animatedValue = new Animated.Value(0)
@@ -144,9 +152,15 @@ export default class TextMarquee extends PureComponent {
     this.setTimeout(async () => {
       await this.calculateMetrics()
       if (!this.state.contentFits) {
-        if (this.state.shouldBounce && this.props.bounce) {
+        if (this.props.animationType === 'auto') {
+          if (this.state.shouldBounce && this.props.bounce) {
+            this.animateBounce()
+          } else {
+            this.animateScroll()
+          }
+        } else if (this.props.animationType === 'bounce') {
           this.animateBounce()
-        } else {
+        } else if (this.props.animationType === 'scroll') {
           this.animateScroll()
         }
       }
