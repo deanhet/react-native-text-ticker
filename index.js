@@ -39,6 +39,7 @@ export default class TextMarquee extends PureComponent {
     repeatSpacer:      PropTypes.number,
     easing:            PropTypes.func,
     animationType:     PropTypes.string, //(values should be from AnimationType, 'auto', 'scroll', 'bounce')
+    scrollingSpeed:    PropTypes.number //Will be ignored if you set duration directly.
   }
 
   static defaultProps = {
@@ -53,6 +54,7 @@ export default class TextMarquee extends PureComponent {
     repeatSpacer:      50,
     easing:            Easing.ease,
     animationType:     'auto',
+    scrollingSpeed:    50
   }
 
   animatedValue = new Animated.Value(0)
@@ -122,29 +124,32 @@ export default class TextMarquee extends PureComponent {
   }
 
   animateBounce = () => {
-    const {duration, marqueeDelay, loop, isInteraction, useNativeDriver, easing, children} = this.props
+    const {duration, marqueeDelay, loop, isInteraction, useNativeDriver, easing, children, scrollingSpeed} = this.props
     this.setTimeout(() => {
       Animated.sequence([
         Animated.timing(this.animatedValue, {
           toValue:         -this.distance - 10,
-          duration:        duration || children.length * 50,
+          duration:        duration || (this.distance) * scrollingSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
         }),
         Animated.timing(this.animatedValue, {
           toValue:         10,
-          duration:        duration || children.length * 50,
+          duration:        duration || (this.distance) * scrollingSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
         })
       ]).start(({finished}) => {
+        if (finished) {
+          this._hasFinishedFirstLoop = true
+        }
         if (loop) {
           this.animateBounce()
         }
       })
-    }, marqueeDelay)
+    }, this._hasFinishedFirstLoop ? 0 : marqueeDelay)
   }
 
   start = async (timeDelay) => {
