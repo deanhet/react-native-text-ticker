@@ -60,13 +60,18 @@ const styles = StyleSheet.create({
 
 ```
 
+animationType:     PropTypes.string, //(values should be from AnimationType, 'auto', 'scroll', 'bounce')
+scrollingSpeed:    PropTypes.number //Will be ignored if you set duration directly.
+
 ## Properties
 | Prop            | Type      | Optional | Default  | Description
 |-----------------|-----------|----------|----------|-------------
 | style           | StyleObj  | true     | -        | Text Style
 | duration        | number    | true     | `150ms` * length of string | Number of milliseconds until animation finishes
-| loop            | boolean   | true     |  true    | Infinitely scroll the text
-| bounce          | boolean   | true     |  true    | If text is only slightly longer than its container then bounce back/forwards instead of full scroll
+| scrollingSpeed  | number    | true     |  50      | Describes how fast the bounce animation moves. Effective when duration is not set.  When effective, the duration will depends on the width of text and screen width
+| animationType   | string    | true     | 'auto'   | one of the values from 'auto', 'scroll', 'bounce'
+| loop            | boolean   | true     |  true    | Infinitely scroll the text, effective when animationType is 'auto'
+| bounce          | boolean   | true     |  true    | If text is only slightly longer than its container then bounce back/forwards instead of full scroll, effective when animationType is 'auto'
 | scroll          | boolean   | true     |  true    | Gives the ability to grab the text and scroll for the user to read themselves. Will start scrolling again after `marqueeDelay` or `3000ms`
 | marqueeOnMount  | boolean   | true     |  true    | Will start scroll as soon as component has mounted. Disable if using methods instead.
 | marqueeDelay    | number    | true     |  0       | Number of milliseconds to wait before starting marquee
