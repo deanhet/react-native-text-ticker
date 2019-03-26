@@ -60,8 +60,6 @@ const styles = StyleSheet.create({
 
 ```
 
-animationType:     PropTypes.string, //(values should be from AnimationType, 'auto', 'scroll', 'bounce')
-scrollingSpeed:    PropTypes.number //Will be ignored if you set duration directly.
 
 ## Properties
 | Prop            | Type      | Optional | Default  | Description
