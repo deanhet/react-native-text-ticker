@@ -143,13 +143,13 @@ export default class TextMarquee extends PureComponent {
         })
       ]).start(({finished}) => {
         if (finished) {
-          this._hasFinishedFirstLoop = true
+          this.hasFinishedFirstLoop = true
         }
         if (loop) {
           this.animateBounce()
         }
       })
-    }, this._hasFinishedFirstLoop ? 0 : marqueeDelay)
+    }, this.hasFinishedFirstLoop ? 0 : marqueeDelay)
   }
 
   start = async (timeDelay) => {
