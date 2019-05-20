@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
 | marqueeOnMount  | boolean   | true     |  true    | Will start scroll as soon as component has mounted. Disable if using methods instead.
 | marqueeDelay    | number    | true     |  0       | Number of milliseconds to wait before starting marquee
 | onMarqueeComplete | function | true    |  -       | This function will run after the text has completely passed across the screen. Will run repeatedly if `loop` is enabled.
+| onScrollStart   | function  | true     |  -       | This function will run if the text is long enough to trigger the scroll.
 | isInteraction   | boolean   | true     | true     | Whether or not animations create an interaction handle on the `InteractionManager`. Disable if you are having issues with VirtualizedLists not rendering properly.
 | useNativeDriver | boolean   | true     | true     | Use native animation driver, should remain true for large majority of use-cases
 | repeatSpacer    | number    | true     | 50       | The space between the end of your text string ticker and the beginning of it starting again.
