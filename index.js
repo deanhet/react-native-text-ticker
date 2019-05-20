@@ -13,12 +13,6 @@ import PropTypes from 'prop-types'
 
 const { UIManager } = NativeModules
 
-export const TextTickAnimationType = Object.freeze({
-  auto: 'auto',
-  scroll: 'scroll',
-  bounce: 'bounce'
-})
-
 export default class TextMarquee extends PureComponent {
 
   static propTypes = {
@@ -29,17 +23,15 @@ export default class TextMarquee extends PureComponent {
     scroll:            PropTypes.bool,
     marqueeOnMount:    PropTypes.bool,
     marqueeDelay:      PropTypes.number,
-    isInteraction:     PropTypes.bool,
     useNativeDriver:   PropTypes.bool,
     onMarqueeComplete: PropTypes.func,
+    onScroll:          PropTypes.func,
     children:          PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.array
     ]),
-    repeatSpacer:      PropTypes.number,
-    easing:            PropTypes.func,
-    animationType:     PropTypes.string, //(values should be from AnimationType, 'auto', 'scroll', 'bounce')
-    scrollingSpeed:    PropTypes.number //Will be ignored if you set duration directly.
+    repeatSpacer:    PropTypes.number,
+    easing:          PropTypes.func
   }
 
   static defaultProps = {
@@ -49,12 +41,9 @@ export default class TextMarquee extends PureComponent {
     scroll:            true,
     marqueeOnMount:    true,
     marqueeDelay:      0,
-    isInteraction:     true,
     useNativeDriver:   true,
     repeatSpacer:      50,
-    easing:            Easing.ease,
-    animationType:     'auto',
-    scrollingSpeed:    50
+    easing:            Easing.ease
   }
 
   animatedValue = new Animated.Value(0)
@@ -95,7 +84,6 @@ export default class TextMarquee extends PureComponent {
       duration,
       marqueeDelay,
       loop,
-      isInteraction,
       useNativeDriver,
       repeatSpacer,
       easing,
@@ -107,7 +95,6 @@ export default class TextMarquee extends PureComponent {
         toValue:         -this.textWidth - repeatSpacer,
         duration:        duration || children.length * 150,
         easing:          easing,
-        isInteraction:   isInteraction,
         useNativeDriver: useNativeDriver
       }).start(({ finished }) => {
         if (finished) {
@@ -124,32 +111,27 @@ export default class TextMarquee extends PureComponent {
   }
 
   animateBounce = () => {
-    const {duration, marqueeDelay, loop, isInteraction, useNativeDriver, easing, children, scrollingSpeed} = this.props
+    const {duration, marqueeDelay, loop, useNativeDriver, easing, children} = this.props
     this.setTimeout(() => {
       Animated.sequence([
         Animated.timing(this.animatedValue, {
           toValue:         -this.distance - 10,
-          duration:        duration || (this.distance) * scrollingSpeed,
+          duration:        duration || children.length * 50,
           easing:          easing,
-          isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
         }),
         Animated.timing(this.animatedValue, {
           toValue:         10,
-          duration:        duration || (this.distance) * scrollingSpeed,
+          duration:        duration || children.length * 50,
           easing:          easing,
-          isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
         })
       ]).start(({finished}) => {
-        if (finished) {
-          this.hasFinishedFirstLoop = true
-        }
         if (loop) {
           this.animateBounce()
         }
       })
-    }, this.hasFinishedFirstLoop ? 0 : marqueeDelay)
+    }, marqueeDelay)
   }
 
   start = async (timeDelay) => {
@@ -157,15 +139,13 @@ export default class TextMarquee extends PureComponent {
     this.setTimeout(async () => {
       await this.calculateMetrics()
       if (!this.state.contentFits) {
-        if (this.props.animationType === 'auto') {
-          if (this.state.shouldBounce && this.props.bounce) {
-            this.animateBounce()
-          } else {
-            this.animateScroll()
-          }
-        } else if (this.props.animationType === 'bounce') {
+        const {onScroll} = this.props
+        if(onScroll && typeof onScroll === "function") {
+          onScroll()
+        }
+        if (this.state.shouldBounce && this.props.bounce) {
           this.animateBounce()
-        } else if (this.props.animationType === 'scroll') {
+        } else {
           this.animateScroll()
         }
       }
