@@ -32,6 +32,7 @@ export default class TextMarquee extends PureComponent {
     isInteraction:     PropTypes.bool,
     useNativeDriver:   PropTypes.bool,
     onMarqueeComplete: PropTypes.func,
+    onScrollStart:     PropTypes.func,
     children:          PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.array
@@ -157,6 +158,10 @@ export default class TextMarquee extends PureComponent {
     this.setTimeout(async () => {
       await this.calculateMetrics()
       if (!this.state.contentFits) {
+        const {onScrollStart} = this.props
+        if(onScrollStart && typeof onScrollStart === "function") {
+          onScrollStart()
+        }
         if (this.props.animationType === 'auto') {
           if (this.state.shouldBounce && this.props.bounce) {
             this.animateBounce()
