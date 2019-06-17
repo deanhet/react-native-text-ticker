@@ -78,6 +78,12 @@ export default class TextMarquee extends PureComponent {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.children !== prevProps.children) {
+      this.resetScroll()
+    }
+  }
+
   componentWillUnmount() {
     this.stopAnimation();
     // always stop timers when unmounting, common source of crash
@@ -239,7 +245,7 @@ export default class TextMarquee extends PureComponent {
     this.timer = setTimeout(fn, time)
   }
 
-  onScroll = () => {
+  resetScroll = () => {
     this.clearTimeout()
     this.setState({ isScrolling: true })
     this.animatedValue.setValue(0)
@@ -266,7 +272,7 @@ export default class TextMarquee extends PureComponent {
           horizontal
           scrollEnabled={scroll ? !this.state.contentFits : false}
           scrollEventThrottle={16}
-          onScroll={this.onScroll}
+          onScroll={this.resetScroll}
           showsHorizontalScrollIndicator={false}
           style={StyleSheet.absoluteFillObject}
           display={animating ? 'flex' : 'none'}
