@@ -287,7 +287,7 @@ export default class TextMarquee extends PureComponent {
           >
             {this.props.children}
           </Animated.Text>
-          {!contentFits && !isScrolling
+          {!I18nManager.isRTL && !contentFits && !isScrolling
             ? <View style={{ paddingLeft: repeatSpacer }}>
               <Animated.Text
                 numberOfLines={1}
