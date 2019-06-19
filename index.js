@@ -7,7 +7,8 @@ import {
   View,
   ScrollView,
   NativeModules,
-  findNodeHandle
+  findNodeHandle,
+  I18nManager
 } from 'react-native'
 import PropTypes from 'prop-types'
 
@@ -135,7 +136,7 @@ export default class TextMarquee extends PureComponent {
     this.setTimeout(() => {
       Animated.sequence([
         Animated.timing(this.animatedValue, {
-          toValue:         -this.distance - 10,
+          toValue:         I18nManager.isRTL ? this.distance + 10 : -this.distance - 10,
           duration:        duration || (this.distance) * scrollingSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
