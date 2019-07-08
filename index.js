@@ -110,23 +110,27 @@ export default class TextMarquee extends PureComponent {
       onMarqueeComplete
     } = this.props
     this.setTimeout(() => {
-      Animated.timing(this.animatedValue, {
-        toValue:         -this.textWidth - repeatSpacer,
-        duration:        duration || children.length * 150,
-        easing:          easing,
-        isInteraction:   isInteraction,
-        useNativeDriver: useNativeDriver
-      }).start(({ finished }) => {
-        if (finished) {
-          if (onMarqueeComplete) {
-            onMarqueeComplete()
+      const scrollToValue = -this.textWidth - repeatSpacer
+      if(!isNaN(scrollToValue)) {
+        Animated.timing(this.animatedValue, {
+          toValue:         scrollToValue,
+          duration:        duration || children.length * 150,
+          easing:          easing,
+          isInteraction:   isInteraction,
+          useNativeDriver: useNativeDriver
+        }).start(({ finished }) => {
+          if (finished) {
+            if (onMarqueeComplete) {
+              onMarqueeComplete()
+            }
+            if (loop) {
+              this.animatedValue.setValue(0)
+              this.animateScroll()
+            }
           }
-          if (loop) {
-            this.animatedValue.setValue(0)
-            this.animateScroll()
-          }
+        })} else {
+          this.start()
         }
-      })
     }, marqueeDelay)
   }
 
