@@ -110,9 +110,10 @@ export default class TextMarquee extends PureComponent {
       onMarqueeComplete
     } = this.props
     this.setTimeout(() => {
-      if(!isNaN(-this.textWidth - repeatSpacer)) {
+      const scrollToValue = -this.textWidth - repeatSpacer
+      if(!isNaN(scrollToValue)) {
         Animated.timing(this.animatedValue, {
-          toValue:         -this.textWidth - repeatSpacer,
+          toValue:         scrollToValue,
           duration:        duration || children.length * 150,
           easing:          easing,
           isInteraction:   isInteraction,
