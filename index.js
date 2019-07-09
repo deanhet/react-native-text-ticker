@@ -85,9 +85,16 @@ export default class TextMarquee extends PureComponent {
   }
 
   componentWillUnmount() {
+    this.unmounted = true
     this.stopAnimation();
     // always stop timers when unmounting, common source of crash
     this.clearTimeout();
+  }
+
+  setState = (state) => {
+    if (!this.unmounted) {
+      super.setState(state)
+    }
   }
 
   startAnimation = (timeDelay) => {
@@ -312,4 +319,3 @@ const styles = StyleSheet.create({
     overflow: 'hidden'
   }
 })
-
