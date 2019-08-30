@@ -40,7 +40,8 @@ export default class TextMarquee extends PureComponent {
     repeatSpacer:      PropTypes.number,
     easing:            PropTypes.func,
     animationType:     PropTypes.string, //(values should be from AnimationType, 'auto', 'scroll', 'bounce')
-    scrollingSpeed:    PropTypes.number //Will be ignored if you set duration directly.
+    scrollingSpeed:    PropTypes.number, //Will be ignored if you set duration directly.
+    shouldAnimateTreshold: PropTypes.number,
   }
 
   static defaultProps = {
@@ -55,7 +56,8 @@ export default class TextMarquee extends PureComponent {
     repeatSpacer:      50,
     easing:            Easing.ease,
     animationType:     'auto',
-    scrollingSpeed:    50
+    scrollingSpeed:    50,
+    shouldAnimateTreshold: 0,
   }
 
   animatedValue = new Animated.Value(0)
@@ -193,6 +195,7 @@ export default class TextMarquee extends PureComponent {
   }
 
   async calculateMetrics() {
+    const {shouldAnimateTreshold} = this.props
     return new Promise(async (resolve, reject) => {
       try {
         const measureWidth = node =>
@@ -221,8 +224,8 @@ export default class TextMarquee extends PureComponent {
         this.setState({
           // Is 1 instead of 0 to get round rounding errors from:
           // https://github.com/facebook/react-native/commit/a534672
-          contentFits:  this.distance <= 1,
-          shouldBounce: this.distance < this.containerWidth / 8
+          contentFits:  this.distance - shouldAnimateTreshold <= 1,
+          shouldBounce: this.distance - shouldAnimateTreshold < this.containerWidth / 8
         })
         // console.log(`distance: ${this.distance}, contentFits: ${this.state.contentFits}`)
         resolve([])
@@ -312,4 +315,3 @@ const styles = StyleSheet.create({
     overflow: 'hidden'
   }
 })
-
