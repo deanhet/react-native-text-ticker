@@ -224,8 +224,8 @@ export default class TextMarquee extends PureComponent {
         this.setState({
           // Is 1 instead of 0 to get round rounding errors from:
           // https://github.com/facebook/react-native/commit/a534672
-          contentFits:  this.distance - shouldAnimateTreshold <= 1,
-          shouldBounce: this.distance - shouldAnimateTreshold < this.containerWidth / 8
+          contentFits:  this.distance + shouldAnimateTreshold <= 1,
+          shouldBounce: this.distance + shouldAnimateTreshold < this.containerWidth / 8,
         })
         // console.log(`distance: ${this.distance}, contentFits: ${this.state.contentFits}`)
         resolve([])
@@ -263,10 +263,19 @@ export default class TextMarquee extends PureComponent {
   }
 
   render() {
-    const { style, children, repeatSpacer, scroll, ... props } = this.props
+    const { style, children, repeatSpacer, scroll, shouldAnimateTreshold, ... props } = this.props
     const { animating, contentFits, isScrolling } = this.state
+    const additionalContainerStyle = {
+      // This is useful for shouldAnimateTreshold only:
+      // we use flex: 1 to make the container take all the width available
+      // without this, if the children have a width smaller that this component's parent's,
+      // the container would have the width of the children (the text)
+      // In this case, it would be impossible to determine if animating is necessary based on the width of the container
+      // (contentFits in calculateMetrics() would always be true)
+      flex: shouldAnimateTreshold ? 1 : undefined
+    }
     return (
-      <View style={[styles.container]}>
+      <View style={[styles.container, additionalContainerStyle]}>
         <Text
           {...props}
           numberOfLines={1}
@@ -312,6 +321,6 @@ export default class TextMarquee extends PureComponent {
 
 const styles = StyleSheet.create({
   container: {
-    overflow: 'hidden'
-  }
+    overflow: 'hidden',
+  },
 })
