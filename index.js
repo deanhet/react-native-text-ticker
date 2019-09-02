@@ -67,7 +67,7 @@ export default class TextMarquee extends PureComponent {
 
   state = {
     animating:    false,
-    contentFits:  false,
+    contentFits:  true,
     shouldBounce: false,
     isScrolling:  false
   }
@@ -237,7 +237,7 @@ export default class TextMarquee extends PureComponent {
 
   invalidateMetrics = () => {
     this.distance = null
-    this.setState({ contentFits: false })
+    this.setState({ contentFits: true })
   }
 
   clearTimeout() {
