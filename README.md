@@ -4,6 +4,8 @@
 ## Screenshot
 ![examples](https://raw.githubusercontent.com/deanhet/react-native-text-ticker/master/example/media/example.gif)
 
+![examples](./example/media/example2.gif)
+
 ## Description
 Inspired from the great [react-native-marquee](https://github.com/kyo504/react-native-marquee), this module acts similarly but with a few extra features and props:
 
@@ -79,6 +81,8 @@ const styles = StyleSheet.create({
 | useNativeDriver | boolean   | true     | true     | Use native animation driver, should remain true for large majority of use-cases
 | repeatSpacer    | number    | true     | 50       | The space between the end of your text string ticker and the beginning of it starting again.
 | easing          | function  | true     | Easing.ease | How the text scrolling animates. Additional options available from the [Easing module](https://facebook.github.io/react-native/docs/easing.html)
+| shouldAnimateTreshold | number | true  | 0        | If you have a view drawn over the text at the right (a fade-out gradient for instance) this should be set to the width of the overlaying view: ![examples](./example/media/example2.gif)
+
 
 ## Methods
 These methods are optional and can be accessed by accessing the ref:
