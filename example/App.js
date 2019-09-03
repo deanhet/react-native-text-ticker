@@ -100,10 +100,10 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     right: 0,
-    opacity: 0.8,
+    opacity: 0.8
   },
   shouldAnimateTresholdContainer: {
     marginBottom: 20,
-    height: 20,
+    height: 20
   }
 })
