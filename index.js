@@ -40,7 +40,8 @@ export default class TextMarquee extends PureComponent {
     repeatSpacer:      PropTypes.number,
     easing:            PropTypes.func,
     animationType:     PropTypes.string, //(values should be from AnimationType, 'auto', 'scroll', 'bounce')
-    scrollingSpeed:    PropTypes.number //Will be ignored if you set duration directly.
+    scrollingSpeed:    PropTypes.number, //Will be ignored if you set duration directly.
+    shouldAnimateTreshold: PropTypes.number
   }
 
   static defaultProps = {
@@ -55,7 +56,8 @@ export default class TextMarquee extends PureComponent {
     repeatSpacer:      50,
     easing:            Easing.ease,
     animationType:     'auto',
-    scrollingSpeed:    50
+    scrollingSpeed:    50,
+    shouldAnimateTreshold: 0
   }
 
   animatedValue = new Animated.Value(0)
@@ -65,7 +67,7 @@ export default class TextMarquee extends PureComponent {
 
   state = {
     animating:    false,
-    contentFits:  false,
+    contentFits:  true,
     shouldBounce: false,
     isScrolling:  false
   }
@@ -193,6 +195,7 @@ export default class TextMarquee extends PureComponent {
   }
 
   async calculateMetrics() {
+    const {shouldAnimateTreshold} = this.props
     return new Promise(async (resolve, reject) => {
       try {
         const measureWidth = node =>
@@ -216,7 +219,7 @@ export default class TextMarquee extends PureComponent {
 
         this.containerWidth = containerWidth
         this.textWidth = textWidth
-        this.distance = textWidth - containerWidth
+        this.distance = textWidth - containerWidth + shouldAnimateTreshold
 
         this.setState({
           // Is 1 instead of 0 to get round rounding errors from:
@@ -234,7 +237,7 @@ export default class TextMarquee extends PureComponent {
 
   invalidateMetrics = () => {
     this.distance = null
-    this.setState({ contentFits: false })
+    this.setState({ contentFits: true })
   }
 
   clearTimeout() {
@@ -260,10 +263,19 @@ export default class TextMarquee extends PureComponent {
   }
 
   render() {
-    const { style, children, repeatSpacer, scroll, ... props } = this.props
+    const { style, children, repeatSpacer, scroll, shouldAnimateTreshold, ... props } = this.props
     const { animating, contentFits, isScrolling } = this.state
+    const additionalContainerStyle = {
+      // This is useful for shouldAnimateTreshold only:
+      // we use flex: 1 to make the container take all the width available
+      // without this, if the children have a width smaller that this component's parent's,
+      // the container would have the width of the children (the text)
+      // In this case, it would be impossible to determine if animating is necessary based on the width of the container
+      // (contentFits in calculateMetrics() would always be true)
+      flex: shouldAnimateTreshold ? 1 : undefined
+    }
     return (
-      <View style={[styles.container]}>
+      <View style={[styles.container, additionalContainerStyle]}>
         <Text
           {...props}
           numberOfLines={1}
@@ -312,4 +324,3 @@ const styles = StyleSheet.create({
     overflow: 'hidden'
   }
 })
-
