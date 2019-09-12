@@ -36,7 +36,7 @@ import TextTicker from 'react-native-text-ticker'
 export default class Example extends PureComponent {
   render(){
     return(
-      <View style={style.container}>
+      <View style={styles.container}>
         <TextTicker
           style={{ fontSize: 24 }}
           duration={3000}
