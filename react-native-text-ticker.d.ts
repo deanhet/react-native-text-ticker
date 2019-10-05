@@ -3,9 +3,9 @@ declare module 'react-native-text-ticker' {
   import { StyleProp, TextProps, TextStyle } from 'react-native';
 
   export interface TextTickerProps extends TextProps {
-    duration: number;
-    onMarqueeComplete: () => void;
-    onScrollStart: () => void;
+    duration?: number;
+    onMarqueeComplete?: () => void;
+    onScrollStart?: () => void;
     style?: StyleProp<TextStyle>;
     loop?: boolean;
     bounce?: boolean;
