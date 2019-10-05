@@ -39,8 +39,9 @@ export default class TextMarquee extends PureComponent {
     ]),
     repeatSpacer:      PropTypes.number,
     easing:            PropTypes.func,
-    animationType:     PropTypes.string, //(values should be from AnimationType, 'auto', 'scroll', 'bounce')
-    scrollingSpeed:    PropTypes.number, //Will be ignored if you set duration directly.
+    animationType:     PropTypes.string, // (values should be from AnimationType, 'auto', 'scroll', 'bounce')
+    bounceSpeed:       PropTypes.number, // Will be ignored if you set duration directly.
+    scrollingSpeed:    PropTypes.number, // Will be ignored if you set duration directly.
     shouldAnimateTreshold: PropTypes.number
   }
 
@@ -56,7 +57,8 @@ export default class TextMarquee extends PureComponent {
     repeatSpacer:      50,
     easing:            Easing.ease,
     animationType:     'auto',
-    scrollingSpeed:    50,
+    bounceSpeed:       50,
+    scrollingSpeed:    150,
     shouldAnimateTreshold: 0
   }
 
@@ -109,6 +111,7 @@ export default class TextMarquee extends PureComponent {
       repeatSpacer,
       easing,
       children,
+      scrollingSpeed,
       onMarqueeComplete
     } = this.props
     this.setTimeout(() => {
@@ -116,7 +119,7 @@ export default class TextMarquee extends PureComponent {
       if(!isNaN(scrollToValue)) {
         Animated.timing(this.animatedValue, {
           toValue:         scrollToValue,
-          duration:        duration || children.length * 150,
+          duration:        duration || children.length * scrollingSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
@@ -137,19 +140,19 @@ export default class TextMarquee extends PureComponent {
   }
 
   animateBounce = () => {
-    const {duration, marqueeDelay, loop, isInteraction, useNativeDriver, easing, children, scrollingSpeed} = this.props
+    const {duration, marqueeDelay, loop, isInteraction, useNativeDriver, easing, children, bounceSpeed} = this.props
     this.setTimeout(() => {
       Animated.sequence([
         Animated.timing(this.animatedValue, {
           toValue:         -this.distance - 10,
-          duration:        duration || (this.distance) * scrollingSpeed,
+          duration:        duration || (this.distance) * bounceSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
         }),
         Animated.timing(this.animatedValue, {
           toValue:         10,
-          duration:        duration || (this.distance) * scrollingSpeed,
+          duration:        duration || (this.distance) * bounceSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
