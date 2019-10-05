@@ -14,7 +14,6 @@ declare module 'react-native-text-ticker' {
     useNativeDriver?: boolean;
     onMarqueeComplete: () => void;
     onScrollStart: () => void;
-
     repeatSpacer?: number;
     easing?: (value: number) => number;
     animationType?: string;
@@ -22,6 +21,5 @@ declare module 'react-native-text-ticker' {
     shouldAnimateTreshold?: number;
   }
 
-  export default class TextTicker<T> extends React.Component<TextTickerProps> {
-  }
+  export default class TextTicker<T> extends React.Component<TextTickerProps> { }
 }
