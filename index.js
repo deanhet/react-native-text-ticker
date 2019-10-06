@@ -41,7 +41,7 @@ export default class TextMarquee extends PureComponent {
     easing:            PropTypes.func,
     animationType:     PropTypes.string, // (values should be from AnimationType, 'auto', 'scroll', 'bounce')
     bounceSpeed:       PropTypes.number, // Will be ignored if you set duration directly.
-    scrollingSpeed:    PropTypes.number, // Will be ignored if you set duration directly.
+    scrollSpeed:       PropTypes.number, // Will be ignored if you set duration directly.
     shouldAnimateTreshold: PropTypes.number
   }
 
@@ -58,7 +58,7 @@ export default class TextMarquee extends PureComponent {
     easing:            Easing.ease,
     animationType:     'auto',
     bounceSpeed:       50,
-    scrollingSpeed:    150,
+    scrollSpeed:       150,
     shouldAnimateTreshold: 0
   }
 
@@ -111,7 +111,7 @@ export default class TextMarquee extends PureComponent {
       repeatSpacer,
       easing,
       children,
-      scrollingSpeed,
+      scrollSpeed,
       onMarqueeComplete
     } = this.props
     this.setTimeout(() => {
@@ -119,7 +119,7 @@ export default class TextMarquee extends PureComponent {
       if(!isNaN(scrollToValue)) {
         Animated.timing(this.animatedValue, {
           toValue:         scrollToValue,
-          duration:        duration || children.length * scrollingSpeed,
+          duration:        duration || children.length * scrollSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
