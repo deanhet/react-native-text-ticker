@@ -17,7 +17,8 @@ declare module 'react-native-text-ticker' {
     repeatSpacer?: number;
     easing?: (value: number) => number;
     animationType?: string;
-    scrollingSpeed?: number;
+    scrollSpeed?: number;
+    bounceSpeed?: number;
     shouldAnimateTreshold?: number;
   }
 
