@@ -68,8 +68,8 @@ const styles = StyleSheet.create({
 |-----------------|-----------|----------|----------|-------------
 | style           | StyleObj  | true     | -        | Text Style
 | duration        | number    | true     | `150ms` * length of string | Number of milliseconds until animation finishes
-| bounceSpeed     | number    | true     |  50      | Describes how fast the bounce animation moves. Effective when duration is not set.  When effective, the duration will depends on the width of text and screen width
-| scrollSpeed     | number    | true     |  150     | Describes how fast the scroll animation moves. Effective when duration is not set.  When effective, the duration will depends on the width of text and screen width
+| bounceSpeed     | number    | true     |  50      | Describes how fast the bounce animation moves. Effective when duration is not set.
+| scrollSpeed     | number    | true     |  150     | Describes how fast the scroll animation moves. Effective when duration is not set.
 | animationType   | string    | true     | 'auto'   | one of the values from 'auto', 'scroll', 'bounce'
 | loop            | boolean   | true     |  true    | Infinitely scroll the text, effective when animationType is 'auto'
 | bounce          | boolean   | true     |  true    | If text is only slightly longer than its container then bounce back/forwards instead of full scroll, effective when animationType is 'auto'
