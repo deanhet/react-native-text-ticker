@@ -62,6 +62,8 @@ const styles = StyleSheet.create({
 
 ```
 
+react-native-text-ticker supports a single child text string, any other use may give unexpected behaviour.
+
 
 ## Properties
 | Prop            | Type      | Optional | Default  | Description
