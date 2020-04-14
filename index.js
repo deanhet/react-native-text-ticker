@@ -7,7 +7,8 @@ import {
   View,
   ScrollView,
   NativeModules,
-  findNodeHandle
+  findNodeHandle,
+  I18nManager
 } from 'react-native'
 import PropTypes from 'prop-types'
 
@@ -115,7 +116,7 @@ export default class TextMarquee extends PureComponent {
       onMarqueeComplete
     } = this.props
     this.setTimeout(() => {
-      const scrollToValue = -this.textWidth - repeatSpacer
+      const scrollToValue = I18nManager.isRTL ? this.textWidth + repeatSpacer : -this.textWidth - repeatSpacer
       if(!isNaN(scrollToValue)) {
         Animated.timing(this.animatedValue, {
           toValue:         scrollToValue,
@@ -144,14 +145,14 @@ export default class TextMarquee extends PureComponent {
     this.setTimeout(() => {
       Animated.sequence([
         Animated.timing(this.animatedValue, {
-          toValue:         -this.distance - 10,
+          toValue:         I18nManager.isRTL ? this.distance + 10 : -this.distance - 10,
           duration:        duration || (this.distance) * bounceSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
         }),
         Animated.timing(this.animatedValue, {
-          toValue:         10,
+          toValue:         I18nManager.isRTL ? -10 : 10,
           duration:        duration || (this.distance) * bounceSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
@@ -255,14 +256,21 @@ export default class TextMarquee extends PureComponent {
     this.timer = setTimeout(fn, time)
   }
 
-  resetScroll = () => {
-    this.clearTimeout()
+  scrollBegin = () => {
     this.setState({ isScrolling: true })
     this.animatedValue.setValue(0)
+  }
+
+  scrollEnd = () => {
     this.setTimeout(() => {
       this.setState({ isScrolling: false })
       this.start()
     }, this.props.marqueeDelay || 3000)
+  }
+
+  resetScroll = () => {
+    this.scrollBegin()
+    this.scrollEnd()
   }
 
   render() {
@@ -291,9 +299,10 @@ export default class TextMarquee extends PureComponent {
           horizontal
           scrollEnabled={scroll ? !this.state.contentFits : false}
           scrollEventThrottle={16}
-          onScroll={this.resetScroll}
+          onScrollBeginDrag={this.scrollBegin}
+          onScrollEndDrag={this.scrollEnd}
           showsHorizontalScrollIndicator={false}
-          style={StyleSheet.absoluteFillObject}
+          style={[StyleSheet.absoluteFillObject, I18nManager.isRTL ? { flexDirection: 'row-reverse' } : null ]}
           display={animating ? 'flex' : 'none'}
           onContentSizeChange={() => this.calculateMetrics()}
         >
