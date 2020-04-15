@@ -91,6 +91,9 @@ export default class TextMarquee extends PureComponent {
     } else if (this.props.disabled !== prevProps.disabled) {
       if (!this.props.disabled && this.props.marqueeOnMount) {
         this.startAnimation(this.props.marqueeDelay)
+      } else if (this.props.disabled) {
+        this.stopAnimation();
+        this.clearTimeout();
       }
     }
   }
