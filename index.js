@@ -43,7 +43,8 @@ export default class TextMarquee extends PureComponent {
     animationType:     PropTypes.string, // (values should be from AnimationType, 'auto', 'scroll', 'bounce')
     bounceSpeed:       PropTypes.number, // Will be ignored if you set duration directly.
     scrollSpeed:       PropTypes.number, // Will be ignored if you set duration directly.
-    shouldAnimateTreshold: PropTypes.number
+    shouldAnimateTreshold: PropTypes.number,
+    disabled:          PropTypes.bool
   }
 
   static defaultProps = {
@@ -60,7 +61,8 @@ export default class TextMarquee extends PureComponent {
     animationType:     'auto',
     bounceSpeed:       50,
     scrollSpeed:       150,
-    shouldAnimateTreshold: 0
+    shouldAnimateTreshold: 0,
+    disabled:          false
   }
 
   animatedValue = new Animated.Value(0)
@@ -77,8 +79,8 @@ export default class TextMarquee extends PureComponent {
 
   componentDidMount() {
     this.invalidateMetrics()
-    const { marqueeDelay, marqueeOnMount } = this.props
-    if (marqueeOnMount) {
+    const { disabled, marqueeDelay, marqueeOnMount } = this.props
+    if (!disabled && marqueeOnMount) {
       this.startAnimation(marqueeDelay)
     }
   }
@@ -86,6 +88,10 @@ export default class TextMarquee extends PureComponent {
   componentDidUpdate(prevProps) {
     if (this.props.children !== prevProps.children) {
       this.resetScroll()
+    } else if (this.props.disabled !== prevProps.disabled) {
+      if (!this.props.disabled && this.props.marqueeOnMount) {
+        this.startAnimation(this.props.marqueeDelay)
+      }
     }
   }
 
@@ -274,7 +280,7 @@ export default class TextMarquee extends PureComponent {
   }
 
   render() {
-    const { style, children, repeatSpacer, scroll, shouldAnimateTreshold, ... props } = this.props
+    const { style, children, repeatSpacer, scroll, shouldAnimateTreshold, disabled, ... props } = this.props
     const { animating, contentFits, isScrolling } = this.state
     const additionalContainerStyle = {
       // This is useful for shouldAnimateTreshold only:
@@ -284,6 +290,19 @@ export default class TextMarquee extends PureComponent {
       // In this case, it would be impossible to determine if animating is necessary based on the width of the container
       // (contentFits in calculateMetrics() would always be true)
       flex: shouldAnimateTreshold ? 1 : undefined
+    }
+    if (disabled) {
+      return (
+        <View style={[styles.container, additionalContainerStyle]}>
+          <Text
+            {...props}
+            numberOfLines={1}
+            style={[style, { opacity: animating ? 0 : 1 }]}
+          >
+            {this.props.children}
+          </Text>
+        </View>
+      )
     }
     return (
       <View style={[styles.container, additionalContainerStyle]}>
