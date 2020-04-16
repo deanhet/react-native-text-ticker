@@ -78,7 +78,7 @@ export default class TextMarquee extends PureComponent {
   }
 
   componentWillMount() {
-    this.calculateMetricsPromise = null;
+    this.calculateMetricsPromise = null
   }
 
   componentDidMount() {
@@ -96,44 +96,45 @@ export default class TextMarquee extends PureComponent {
       if (!this.props.disabled && this.props.marqueeOnMount) {
         this.startAnimation(this.props.marqueeDelay)
       } else if (this.props.disabled) {
-        this.stopAnimation();
-        this.clearTimeout();
+        this.stopAnimation()
+        this.clearTimeout()
       }
     }
   }
 
   componentWillUnmount() {
+    // Cancel promise to stop setState after unmount
     if (this.calculateMetricsPromise !== null) {
-      this.calculateMetricsPromise.cancel();
-      this.calculateMetricsPromise = null;
+      this.calculateMetricsPromise.cancel()
+      this.calculateMetricsPromise = null
     }
-    this.stopAnimation();
+    this.stopAnimation()
     // always stop timers when unmounting, common source of crash
-    this.clearTimeout();
+    this.clearTimeout()
   }
 
   makeCancelable = (promise) => {
-    let cancel = () => {};
+    let cancel = () => {}
     const wrappedPromise = new Promise((resolve, reject) => {
       cancel = () => {
         resolve = null
         reject = null
       };
       promise.then(
-        val => {
+        value => {
           if (resolve) {
-            resolve(val);
+            resolve(value)
           }
         }, 
         error => {
           if (reject) {
-            reject(error);
+            reject(error)
           }
         }
       );
     });
-    wrappedPromise.cancel = cancel;
-    return wrappedPromise;
+    wrappedPromise.cancel = cancel
+    return wrappedPromise
   };
 
   startAnimation = (timeDelay) => {
@@ -256,7 +257,6 @@ export default class TextMarquee extends PureComponent {
               return reject('nodehandle_not_found');
             }
           });
-          
         const [containerWidth, textWidth] = await Promise.all([
           measureWidth(this.containerRef),
           measureWidth(this.textRef)
@@ -273,18 +273,17 @@ export default class TextMarquee extends PureComponent {
           contentFits:  this.distance <= 1,
           shouldBounce: this.distance < this.containerWidth / 8
         })
-        
       } catch (error) {
         console.warn('react-native-text-ticker: could not calculate metrics', error);
       }
-    }));
+    }))
     await this.calculateMetricsPromise.then((result) => {
       this.setState({
         contentFits: result.contentFits,
         shouldBounce: result.shouldBounce,
-      });
-      return [];
-    });
+      })
+      return []
+    })
   }
 
   invalidateMetrics = () => {
