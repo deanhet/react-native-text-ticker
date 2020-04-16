@@ -96,6 +96,11 @@ export default class TextMarquee extends PureComponent {
       if (!this.props.disabled && this.props.marqueeOnMount) {
         this.startAnimation(this.props.marqueeDelay)
       } else if (this.props.disabled) {
+        // Cancel any promises
+        if (this.calculateMetricsPromise !== null) {
+          this.calculateMetricsPromise.cancel()
+          this.calculateMetricsPromise = null
+        }
         this.stopAnimation()
         this.clearTimeout()
       }
@@ -345,6 +350,39 @@ export default class TextMarquee extends PureComponent {
         </View>
       )
     }
+    const animatedText = disabled ? null : (
+      <ScrollView
+        ref={c => (this.containerRef = c)}
+        horizontal
+        scrollEnabled={scroll ? !this.state.contentFits : false}
+        scrollEventThrottle={16}
+        onScrollBeginDrag={this.scrollBegin}
+        onScrollEndDrag={this.scrollEnd}
+        showsHorizontalScrollIndicator={false}
+        style={[StyleSheet.absoluteFillObject, I18nManager.isRTL ? { flexDirection: 'row-reverse' } : null ]}
+        display={animating ? 'flex' : 'none'}
+        onContentSizeChange={() => this.calculateMetrics()}
+      >
+        <Animated.Text
+          ref={c => (this.textRef = c)}
+          numberOfLines={1}
+          {... props}
+          style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
+        >
+          {this.props.children}
+        </Animated.Text>
+        {!contentFits && !isScrolling
+          ? <View style={{ paddingLeft: repeatSpacer }}>
+            <Animated.Text
+              numberOfLines={1}
+              {... props}
+              style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
+            >
+              {this.props.children}
+            </Animated.Text>
+          </View> : null }
+      </ScrollView>
+    );
     return (
       <View style={[styles.container, additionalContainerStyle]}>
         <Text
@@ -354,37 +392,7 @@ export default class TextMarquee extends PureComponent {
         >
           {this.props.children}
         </Text>
-        <ScrollView
-          ref={c => (this.containerRef = c)}
-          horizontal
-          scrollEnabled={scroll ? !this.state.contentFits : false}
-          scrollEventThrottle={16}
-          onScrollBeginDrag={this.scrollBegin}
-          onScrollEndDrag={this.scrollEnd}
-          showsHorizontalScrollIndicator={false}
-          style={[StyleSheet.absoluteFillObject, I18nManager.isRTL ? { flexDirection: 'row-reverse' } : null ]}
-          display={animating ? 'flex' : 'none'}
-          onContentSizeChange={() => this.calculateMetrics()}
-        >
-          <Animated.Text
-            ref={c => (this.textRef = c)}
-            numberOfLines={1}
-            {... props}
-            style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
-          >
-            {this.props.children}
-          </Animated.Text>
-          {!contentFits && !isScrolling
-            ? <View style={{ paddingLeft: repeatSpacer }}>
-              <Animated.Text
-                numberOfLines={1}
-                {... props}
-                style={[style, { transform: [{ translateX: this.animatedValue }], width: null }]}
-              >
-                {this.props.children}
-              </Animated.Text>
-            </View> : null }
-        </ScrollView>
+        {animatedText}
       </View>
     )
   }
