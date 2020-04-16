@@ -337,19 +337,6 @@ export default class TextMarquee extends PureComponent {
       // (contentFits in calculateMetrics() would always be true)
       flex: shouldAnimateTreshold ? 1 : undefined
     }
-    if (disabled) {
-      return (
-        <View style={[styles.container, additionalContainerStyle]}>
-          <Text
-            {...props}
-            numberOfLines={1}
-            style={[style, { opacity: animating ? 0 : 1 }]}
-          >
-            {this.props.children}
-          </Text>
-        </View>
-      )
-    }
     const animatedText = disabled ? null : (
       <ScrollView
         ref={c => (this.containerRef = c)}
