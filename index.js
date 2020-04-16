@@ -77,6 +77,10 @@ export default class TextMarquee extends PureComponent {
     isScrolling:  false
   }
 
+  componentWillMount() {
+    this.calculateMetricsPromise = null;
+  }
+
   componentDidMount() {
     this.invalidateMetrics()
     const { disabled, marqueeDelay, marqueeOnMount } = this.props
@@ -99,10 +103,38 @@ export default class TextMarquee extends PureComponent {
   }
 
   componentWillUnmount() {
+    if (this.calculateMetricsPromise !== null) {
+      this.calculateMetricsPromise.cancel();
+      this.calculateMetricsPromise = null;
+    }
     this.stopAnimation();
     // always stop timers when unmounting, common source of crash
     this.clearTimeout();
   }
+
+  makeCancelable = (promise) => {
+    let cancel = () => {};
+    const wrappedPromise = new Promise((resolve, reject) => {
+      cancel = () => {
+        resolve = null
+        reject = null
+      };
+      promise.then(
+        val => {
+          if (resolve) {
+            resolve(val);
+          }
+        }, 
+        error => {
+          if (reject) {
+            reject(error);
+          }
+        }
+      );
+    });
+    wrappedPromise.cancel = cancel;
+    return wrappedPromise;
+  };
 
   startAnimation = (timeDelay) => {
     if (this.state.animating) {
@@ -209,7 +241,7 @@ export default class TextMarquee extends PureComponent {
 
   async calculateMetrics() {
     const {shouldAnimateTreshold} = this.props
-    return new Promise(async (resolve, reject) => {
+    this.calculateMetricsPromise = this.makeCancelable(new Promise(async (resolve, reject) => {
       try {
         const measureWidth = node =>
           new Promise(async (resolve, reject) => {
@@ -224,7 +256,7 @@ export default class TextMarquee extends PureComponent {
               return reject('nodehandle_not_found');
             }
           });
-
+          
         const [containerWidth, textWidth] = await Promise.all([
           measureWidth(this.containerRef),
           measureWidth(this.textRef)
@@ -234,18 +266,25 @@ export default class TextMarquee extends PureComponent {
         this.textWidth = textWidth
         this.distance = textWidth - containerWidth + shouldAnimateTreshold
 
-        this.setState({
+        // console.log(`distance: ${this.distance}, contentFits: ${this.state.contentFits}`)
+        resolve({
           // Is 1 instead of 0 to get round rounding errors from:
           // https://github.com/facebook/react-native/commit/a534672
           contentFits:  this.distance <= 1,
           shouldBounce: this.distance < this.containerWidth / 8
         })
-        // console.log(`distance: ${this.distance}, contentFits: ${this.state.contentFits}`)
-        resolve([])
+        
       } catch (error) {
         console.warn('react-native-text-ticker: could not calculate metrics', error);
       }
-    })
+    }));
+    await this.calculateMetricsPromise.then((result) => {
+      this.setState({
+        contentFits: result.contentFits,
+        shouldBounce: result.shouldBounce,
+      });
+      return [];
+    });
   }
 
   invalidateMetrics = () => {
