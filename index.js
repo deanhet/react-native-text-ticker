@@ -77,10 +77,11 @@ export default class TextMarquee extends PureComponent {
     isScrolling:  false
   }
 
-  componentWillMount() {
+  constructor(props) {
+    super(props);
     this.calculateMetricsPromise = null
   }
-
+  
   componentDidMount() {
     this.invalidateMetrics()
     const { disabled, marqueeDelay, marqueeOnMount } = this.props
