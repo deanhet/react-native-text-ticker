@@ -86,6 +86,7 @@ react-native-text-ticker supports a single child text string, any other use may 
 | easing          | function  | true     | Easing.ease | How the text scrolling animates. Additional options available from the [Easing module](https://facebook.github.io/react-native/docs/easing.html)
 | shouldAnimateTreshold | number | true  | 0        | If you have a view drawn over the text at the right (a fade-out gradient for instance) this should be set to the width of the overlaying view: ![examples](./example/media/example2.gif)
 | disabled        | boolean   | true     | false    | Disables text animation
+| isRTL        | boolean   | true     | false    | If text is right to left (By default, it uses `I18nManager.isRTL` to check)
 
 ## Methods
 These methods are optional and can be accessed by accessing the ref:
