@@ -20,6 +20,7 @@ declare module 'react-native-text-ticker' {
     scrollSpeed?: number;
     bounceSpeed?: number;
     shouldAnimateTreshold?: number;
+    isRTL: boolean;
   }
 
   export default class TextTicker<T> extends React.Component<TextTickerProps> { }
