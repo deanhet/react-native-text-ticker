@@ -82,7 +82,8 @@ react-native-text-ticker supports a single child text string, any other use may 
 | onScrollStart   | function  | true     |  -       | This function will run if the text is long enough to trigger the scroll.
 | isInteraction   | boolean   | true     | true     | Whether or not animations create an interaction handle on the `InteractionManager`. Disable if you are having issues with VirtualizedLists not rendering properly.
 | useNativeDriver | boolean   | true     | true     | Use native animation driver, should remain true for large majority of use-cases
-| repeatSpacer    | number    | true     | 50       | The space between the end of your text string ticker and the beginning of it starting again.
+| repeatSpacer    | number    | true     | 50       | The space between the end of your text string ticker and the beginning of it starting again.  
+| bouncePadding    | `{ left: number, right: number }`    | true     | -       | The padding on start/end positions of bounce.  
 | easing          | function  | true     | Easing.ease | How the text scrolling animates. Additional options available from the [Easing module](https://facebook.github.io/react-native/docs/easing.html)
 | shouldAnimateTreshold | number | true  | 0        | If you have a view drawn over the text at the right (a fade-out gradient for instance) this should be set to the width of the overlaying view: ![examples](./example/media/example2.gif)
 | disabled        | boolean   | true     | false    | Disables text animation
