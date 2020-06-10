@@ -43,6 +43,10 @@ export default class TextMarquee extends PureComponent {
     animationType:     PropTypes.string, // (values should be from AnimationType, 'auto', 'scroll', 'bounce')
     bounceSpeed:       PropTypes.number, // Will be ignored if you set duration directly.
     scrollSpeed:       PropTypes.number, // Will be ignored if you set duration directly.
+    bouncePadding:     PropTypes.shape({
+      left: PropTypes.number,
+      right: PropTypes.number
+    }),
     shouldAnimateTreshold: PropTypes.number,
     disabled:          PropTypes.bool,
     isRTL:             PropTypes.bool
@@ -62,6 +66,7 @@ export default class TextMarquee extends PureComponent {
     animationType:     'auto',
     bounceSpeed:       50,
     scrollSpeed:       150,
+    bouncePadding:     undefined,
     shouldAnimateTreshold: 0,
     disabled:          false,
     isRTL:             undefined
@@ -192,18 +197,21 @@ export default class TextMarquee extends PureComponent {
   }
 
   animateBounce = () => {
-    const {duration, marqueeDelay, loop, isInteraction, useNativeDriver, easing, bounceSpeed, isRTL} = this.props
+    const {duration, marqueeDelay, loop, isInteraction, useNativeDriver, easing, bounceSpeed, bouncePadding, isRTL} = this.props
+    const rtl = isRTL ?? I18nManager.isRTL;
+    const bounceEndPadding = rtl ? bouncePadding?.left : bouncePadding?.right;
+    const bounceStartPadding = rtl ? bouncePadding?.right : bouncePadding?.left;
     this.setTimeout(() => {
       Animated.sequence([
         Animated.timing(this.animatedValue, {
-          toValue:         isRTL ?? I18nManager.isRTL ? this.distance + 10 : -this.distance - 10,
+          toValue:         rtl ? this.distance + (bounceEndPadding ?? 10) : -this.distance - (bounceEndPadding ?? 10),
           duration:        duration || (this.distance) * bounceSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
         }),
         Animated.timing(this.animatedValue, {
-          toValue:         isRTL ?? I18nManager.isRTL ? -10 : 10,
+          toValue:         rtl ? -(bounceStartPadding ?? 10) : bounceStartPadding ?? 10,
           duration:        duration || (this.distance) * bounceSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
