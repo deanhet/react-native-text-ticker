@@ -326,10 +326,12 @@ export default class TextMarquee extends PureComponent {
   }
 
   scrollEnd = () => {
+    const { marqueeDelay } = this.props
+    
     this.setTimeout(() => {
       this.setState({ isScrolling: false })
       this.start()
-    }, this.props.marqueeDelay || 3000)
+    }, marqueeDelay >= 0 ? marqueeDelay : 3000)
   }
 
   resetScroll = () => {
