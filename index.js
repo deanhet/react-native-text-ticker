@@ -36,7 +36,8 @@ export default class TextMarquee extends PureComponent {
     onScrollStart:     PropTypes.func,
     children:          PropTypes.oneOfType([
       PropTypes.string,
-      PropTypes.array
+      PropTypes.array,
+      PropTypes.node,
     ]),
     repeatSpacer:      PropTypes.number,
     easing:            PropTypes.func,
