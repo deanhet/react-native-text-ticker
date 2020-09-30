@@ -48,6 +48,7 @@ export default class TextMarquee extends PureComponent {
       left: PropTypes.number,
       right: PropTypes.number
     }),
+    bounceDelay: PropTypes.number,
     shouldAnimateTreshold: PropTypes.number,
     disabled:          PropTypes.bool,
     isRTL:             PropTypes.bool
@@ -68,6 +69,7 @@ export default class TextMarquee extends PureComponent {
     bounceSpeed:       50,
     scrollSpeed:       150,
     bouncePadding:     undefined,
+    bounceDelay: 0,
     shouldAnimateTreshold: 0,
     disabled:          false,
     isRTL:             undefined
@@ -198,7 +200,7 @@ export default class TextMarquee extends PureComponent {
   }
 
   animateBounce = () => {
-    const {duration, marqueeDelay, loop, isInteraction, useNativeDriver, easing, bounceSpeed, bouncePadding, isRTL} = this.props
+    const {duration, marqueeDelay, loop, isInteraction, useNativeDriver, easing, bounceSpeed, bouncePadding, bounceDelay, isRTL} = this.props
     const rtl = isRTL ?? I18nManager.isRTL;
     const bounceEndPadding = rtl ? bouncePadding?.left : bouncePadding?.right;
     const bounceStartPadding = rtl ? bouncePadding?.right : bouncePadding?.left;
@@ -216,7 +218,8 @@ export default class TextMarquee extends PureComponent {
           duration:        duration || (this.distance) * bounceSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
-          useNativeDriver: useNativeDriver
+          useNativeDriver: useNativeDriver,
+          delay: bounceDelay
         })
       ]).start(({finished}) => {
         if (finished) {
@@ -226,7 +229,7 @@ export default class TextMarquee extends PureComponent {
           this.animateBounce()
         }
       })
-    }, this.hasFinishedFirstLoop ? 0 : marqueeDelay)
+    }, this.hasFinishedFirstLoop ? bounceDelay > 0 ? bounceDelay : 0 : marqueeDelay)
   }
 
   start = async (timeDelay) => {
