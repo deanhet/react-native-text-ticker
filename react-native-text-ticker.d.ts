@@ -1,6 +1,6 @@
 declare module 'react-native-text-ticker' {
   import React from 'react';
-  import { StyleProp, TextProps, TextStyle } from 'react-native';
+  import { StyleProp, TextProps, TextStyle, EasingFunction } from 'react-native';
 
   export interface TextTickerProps extends TextProps {
     duration?: number;
@@ -12,15 +12,21 @@ declare module 'react-native-text-ticker' {
     scroll?: boolean;
     marqueeOnMount?: boolean;
     marqueeDelay?: number;
+    bounceDelay?: number;
     isInteraction?: boolean;
     useNativeDriver?: boolean;
     repeatSpacer?: number;
-    easing?: (value: number) => number;
-    animationType?: string;
+    easing?: EasingFunction;
+    animationType?: 'auto' | 'scroll' | 'bounce';
     scrollSpeed?: number;
     bounceSpeed?: number;
     shouldAnimateTreshold?: number;
-    isRTL: boolean;
+    isRTL?: boolean;
+    bouncePadding?: {
+      left?: number;
+      right?: number;
+    }
+    disabled?: boolean;
   }
 
   export default class TextTicker<T> extends React.Component<TextTickerProps> { }
