@@ -41,7 +41,7 @@ export default class TextMarquee extends PureComponent {
     ]),
     repeatSpacer:      PropTypes.number,
     easing:            PropTypes.func,
-    animationType:     PropTypes.oneOf('auto', 'scroll', 'bounce'), // (values should be from AnimationType, 'auto', 'scroll', 'bounce')
+    animationType:     PropTypes.oneOf(['auto', 'scroll', 'bounce']), // (values should be from AnimationType, 'auto', 'scroll', 'bounce')
     bounceSpeed:       PropTypes.number, // Will be ignored if you set duration directly.
     scrollSpeed:       PropTypes.number, // Will be ignored if you set duration directly.
     bouncePadding:     PropTypes.shape({
