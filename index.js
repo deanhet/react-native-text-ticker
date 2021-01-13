@@ -393,7 +393,7 @@ export default class TextMarquee extends PureComponent {
         <Text
           {...props}
           numberOfLines={1}
-          style={[style, { opacity: animating ? 0 : 1 }]}
+          style={[style, { opacity: !disabled && animating ? 0 : 1 }]}
         >
           {this.props.children}
         </Text>
