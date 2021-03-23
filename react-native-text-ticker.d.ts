@@ -29,5 +29,10 @@ declare module 'react-native-text-ticker' {
     disabled?: boolean;
   }
 
-  export default class TextTicker<T> extends React.Component<TextTickerProps> { }
+  export interface TextTickerRef {
+    startAnimation(): void;
+    stopAnimation(): void;
+  }
+
+  export default class TextTicker extends React.Component<TextTickerProps> { }
 }
