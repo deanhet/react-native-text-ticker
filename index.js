@@ -153,11 +153,11 @@ export default class TextMarquee extends PureComponent {
     return wrappedPromise
   };
 
-  startAnimation = (timeDelay) => {
+  startAnimation = () => {
     if (this.state.animating) {
       return
     }
-    this.start(timeDelay)
+    this.start()
   }
 
   animateScroll = () => {
@@ -232,7 +232,7 @@ export default class TextMarquee extends PureComponent {
     }, this.hasFinishedFirstLoop ? bounceDelay > 0 ? bounceDelay : 0 : marqueeDelay)
   }
 
-  start = async (timeDelay) => {
+  start = async () => {
     this.setState({ animating: true })
     this.setTimeout(async () => {
       await this.calculateMetrics()
