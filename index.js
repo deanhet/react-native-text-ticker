@@ -179,7 +179,7 @@ export default class TextMarquee extends PureComponent {
       if(!isNaN(scrollToValue)) {
         Animated.timing(this.animatedValue, {
           toValue:         scrollToValue,
-          duration:        duration || children.length * scrollSpeed,
+          duration:        duration || this.textWidth * scrollSpeed,
           easing:          easing,
           isInteraction:   isInteraction,
           useNativeDriver: useNativeDriver
