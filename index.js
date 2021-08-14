@@ -10,7 +10,6 @@ import {
   findNodeHandle,
   I18nManager
 } from 'react-native'
-import PropTypes from 'prop-types'
 
 const { UIManager } = NativeModules
 
@@ -21,39 +20,6 @@ export const TextTickAnimationType = Object.freeze({
 })
 
 export default class TextMarquee extends PureComponent {
-
-  static propTypes = {
-    style:             PropTypes.any,
-    duration:          PropTypes.number,
-    loop:              PropTypes.bool,
-    bounce:            PropTypes.bool,
-    scroll:            PropTypes.bool,
-    marqueeOnMount:    PropTypes.bool,
-    marqueeDelay:      PropTypes.number,
-    isInteraction:     PropTypes.bool,
-    useNativeDriver:   PropTypes.bool,
-    onMarqueeComplete: PropTypes.func,
-    onScrollStart:     PropTypes.func,
-    children:          PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.array,
-      PropTypes.node,
-    ]),
-    repeatSpacer:      PropTypes.number,
-    easing:            PropTypes.func,
-    animationType:     PropTypes.oneOf(['auto', 'scroll', 'bounce']), // (values should be from AnimationType, 'auto', 'scroll', 'bounce')
-    bounceSpeed:       PropTypes.number, // Will be ignored if you set duration directly.
-    scrollSpeed:       PropTypes.number, // Will be ignored if you set duration directly.
-    bouncePadding:     PropTypes.shape({
-      left: PropTypes.number,
-      right: PropTypes.number
-    }),
-    bounceDelay: PropTypes.number,
-    shouldAnimateTreshold: PropTypes.number,
-    disabled:          PropTypes.bool,
-    isRTL:             PropTypes.bool
-  }
-
   static defaultProps = {
     style:             {},
     loop:              true,
