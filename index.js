@@ -9,7 +9,7 @@ import {
   NativeModules,
   findNodeHandle,
   I18nManager,
-  TextPropTypes,
+  TextStyle,
 } from 'react-native'
 import PropTypes from 'prop-types'
 
@@ -24,7 +24,7 @@ export const TextTickAnimationType = Object.freeze({
 export default class TextMarquee extends PureComponent {
 
   static propTypes = {
-    style:             TextPropTypes.style,
+    style:             TextStyle,
     duration:          PropTypes.number,
     loop:              PropTypes.bool,
     bounce:            PropTypes.bool,
