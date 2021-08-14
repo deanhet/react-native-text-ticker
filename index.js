@@ -8,7 +8,7 @@ import {
   ScrollView,
   NativeModules,
   findNodeHandle,
-  I18nManager,
+  I18nManager
 } from 'react-native'
 import PropTypes from 'prop-types'
 
