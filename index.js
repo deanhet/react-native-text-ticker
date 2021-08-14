@@ -8,7 +8,8 @@ import {
   ScrollView,
   NativeModules,
   findNodeHandle,
-  I18nManager
+  I18nManager,
+  TextPropTypes,
 } from 'react-native'
 import PropTypes from 'prop-types'
 
@@ -23,7 +24,7 @@ export const TextTickAnimationType = Object.freeze({
 export default class TextMarquee extends PureComponent {
 
   static propTypes = {
-    style:             Text.propTypes.style,
+    style:             TextPropTypes.style,
     duration:          PropTypes.number,
     loop:              PropTypes.bool,
     bounce:            PropTypes.bool,
