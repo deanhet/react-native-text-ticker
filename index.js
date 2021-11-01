@@ -5,11 +5,12 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   NativeModules,
   findNodeHandle,
   I18nManager
 } from 'react-native'
+
+import { ScrollView } from 'react-native-gesture-handler';
 
 const { UIManager } = NativeModules
 
