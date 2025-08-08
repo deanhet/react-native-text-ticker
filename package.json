@@ -1,6 +1,6 @@
 {
   "name": "react-native-text-ticker",
-  "version": "1.14.0",
+  "version": "1.14.1",
   "description": "React Native Text Ticker/Marquee Component",
   "main": "index.js",
   "types": "react-native-text-ticker.d.ts",
