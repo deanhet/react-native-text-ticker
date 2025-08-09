@@ -263,6 +263,11 @@ export default class TextMarquee extends PureComponent {
       }
     }))
     await this.calculateMetricsPromise.then((result) => {
+      if (result.contentFits) {
+        // Reset animatedValue to 0 if content fits;
+        // this avoids content get stuck in animation
+        this.animatedValue.setValue(0);
+      }
       this.setState({
         contentFits: result.contentFits,
         shouldBounce: result.shouldBounce,
