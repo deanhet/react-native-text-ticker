@@ -333,7 +333,7 @@ export default class TextMarquee extends PureComponent {
         onScrollBeginDrag={this.scrollBegin}
         onScrollEndDrag={this.scrollEnd}
         showsHorizontalScrollIndicator={false}
-        style={[StyleSheet.absoluteFillObject, (isRTL ?? I18nManager.isRTL) && { flexDirection: 'row-reverse' } ]}
+        style={[StyleSheet.absoluteFill, (isRTL ?? I18nManager.isRTL) && { flexDirection: 'row-reverse' } ]}
         display={animating ? 'flex' : 'none'}
         onContentSizeChange={() => this.calculateMetrics()}
       >
